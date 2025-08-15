@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { delay, map, of, tap } from 'rxjs';
+import { catchError, delay, EMPTY, map, of, tap } from 'rxjs';
 import { Chat } from 'src/app/models/chat';
 import { ChatRequest } from 'src/app/models/chat-request';
 import { ApiService } from 'src/app/services/api.service';
@@ -16,8 +16,8 @@ const CHAT = 'APP_CHATS';
 })
 export class ChatComponent {
   sessionId = localStorage.getItem('sessionId') || '';
-  chats: [Chat, Chat][] = JSON.parse(
-    localStorage.getItem(CHAT) || JSON.stringify([])
+  chatsMap: { [sessionId: string]: [Chat, Chat][] } = JSON.parse(
+    localStorage.getItem(CHAT) || JSON.stringify({})
   );
   models: string[] = [];
   buttonDisabled = false;
@@ -76,15 +76,24 @@ export class ChatComponent {
       .subscribe((res) => (this.models = res.body || []));
   }
 
-  private addToChats(userContent: string, adminContent: string) {
+  private addToChats(
+    sessionId: string,
+    userContent: string,
+    adminContent: string
+  ) {
     if (!userContent) return;
-    if (this.chats.length >= 10) this.chats.length = 10;
-    this.chats.push([
-      new Chat(true, userContent),
-      new Chat(false, adminContent),
-    ]);
+    let chats = this.chatsMap[sessionId];
+    if (!chats) {
+      chats = [];
+      this.chatsMap[sessionId] = chats;
+    }
 
-    localStorage.setItem(CHAT, JSON.stringify(this.chats));
+    while (chats.length > 20) {
+      chats.shift();
+    }
+    chats.push([new Chat(true, userContent), new Chat(false, adminContent)]);
+
+    localStorage.setItem(CHAT, JSON.stringify(chats));
   }
 
   generateSessionId() {
@@ -98,7 +107,11 @@ export class ChatComponent {
   }
 
   sendChat() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      console.error(this.form.errors);
+      alert('Form errors!');
+      return;
+    }
 
     this.buttonDisabled = true;
     const formVal = this.form.value;
@@ -107,13 +120,17 @@ export class ChatComponent {
       .pipe(
         tap((res) => {
           this.addToChats(
+            this.sessionId,
             res.body?.message as string,
             res.body?.response as string
           );
           this.form.get('message')?.setValue('');
           this.scrollToBottom();
         }),
-        delay(1000)
+        catchError(() => {
+          this.buttonDisabled = false;
+          return EMPTY;
+        })
       )
       .subscribe(() => (this.buttonDisabled = false));
   }

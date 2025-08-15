@@ -18,7 +18,7 @@ export class ApiService {
     dto: ChatRequest
   ): Observable<HttpResponse<ChatResponse>> {
     return this.httpClient.post<ChatResponse>(
-      `${this.endpoint}/chat/generate`,
+      `${this.endpoint}/chat/conversations`,
       dto,
       {
         params: {
