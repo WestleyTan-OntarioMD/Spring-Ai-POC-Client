@@ -1,4 +1,18 @@
+<main class="justify-content-between w-100">
+  <div class="w-100 d-flex flex-rows">
+    <input type="file" (change)="onFileSelected($event)" />
+  </div>
 
-
-<input type="file" (change)="onFileSelected($event)" />
-<button (click)="onUpload()">Upload</button>
+  <div class="d-flex my-2 flex-rows justify-content-between">
+    <button (click)="onUpload()" mat-raised-button color="primary" class="w-25">
+      Upload
+    </button>
+    <button (click)="copy()" mat-raised-button color="primary" class="w-25">
+      {{ copied ? "Copied !!!" : "Copy" }}
+    </button>
+  </div>
+  <mat-form-field appearance="fill" class="mt-4" class="w-100">
+    <mat-label>Message</mat-label>
+    <textarea matInput [(ngModel)]="text" rows="28"></textarea>
+  </mat-form-field>
+</main>

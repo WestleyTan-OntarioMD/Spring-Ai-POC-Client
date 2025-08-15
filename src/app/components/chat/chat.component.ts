@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { delay, map, tap } from 'rxjs';
+import { delay, map, of, tap } from 'rxjs';
 import { Chat } from 'src/app/models/chat';
 import { ChatRequest } from 'src/app/models/chat-request';
 import { ApiService } from 'src/app/services/api.service';
@@ -110,7 +110,7 @@ export class ChatComponent {
             res.body?.message as string,
             res.body?.response as string
           );
-
+          this.form.get('message')?.setValue('');
           this.scrollToBottom();
         }),
         delay(1000)
