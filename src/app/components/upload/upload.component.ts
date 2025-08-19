@@ -47,17 +47,21 @@ export class UploadComponent {
   onUpload() {
     if (!this.selectedFile || this.submitted) return;
     this.submitted = true;
+    this.saveText('');
     this.apiService
       .uploadFile(this.sessionId, this.prompt, this.useMode, this.selectedFile)
       .subscribe((res) => {
-        this.text = res.body?.content || '';
-        localStorage.setItem(TEXT, this.text);
+        this.saveText(res.body?.content || '');
 
         this.selectedFile = null;
         this.submitted = false;
       });
   }
 
+  private saveText(content: string) {
+    this.text = content;
+    localStorage.setItem(TEXT, content);
+  }
   handlePromptChange() {
     localStorage.setItem(PROMPT, this.prompt);
   }

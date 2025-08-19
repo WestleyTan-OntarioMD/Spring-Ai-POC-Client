@@ -13,6 +13,11 @@
     >
       Upload
     </button>
+    <div class="d-flex flex-rows justify-content-center w-50">
+      <div>Upload Image or PDF</div>
+      <div class="mx-1">●</div>
+      <div>Right click below to copy</div>
+    </div>
     <mat-form-field appearance="fill" class="w-25">
       <mat-label>Choose Mode For Image Function</mat-label>
       <mat-select
@@ -39,8 +44,7 @@
       oncontextmenu="return false;"
       [innerHTML]="text"
       (contextmenu)="copy()"
-      class="w-100 text-white"
-      style="height: 65vh"
+      class="w-100 text-white content-container"
     ></mat-card-content>
   </mat-card>
 </main>
