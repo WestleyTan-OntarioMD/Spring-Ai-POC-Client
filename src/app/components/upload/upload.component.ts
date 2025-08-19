@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 
 const TEXT = 'APP_FILE_TEXT';
+const MODE = 'APP_FILE_MODE';
+const PROMPT = 'APP_FILE_PROMPT';
 @Component({
   selector: 'app-upload',
   templateUrl: './upload.component.html',
@@ -10,17 +11,27 @@ const TEXT = 'APP_FILE_TEXT';
 })
 export class UploadComponent {
   sessionId = localStorage.getItem('sessionId') || '';
+
+  prompt = localStorage.getItem(PROMPT) || '';
   text = localStorage.getItem(TEXT) || '';
+  useMode = localStorage.getItem(MODE) || '1';
+  modes = [
+    {
+      key: '1',
+      value: 'Use LLM',
+    },
+    {
+      key: '',
+      value: 'Use OCR',
+    },
+  ];
+
   selectedFile: File | null = null;
   submitted = false;
 
   copied = false;
 
-  constructor(
-    private apiService: ApiService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private apiService: ApiService) {}
 
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
@@ -29,6 +40,7 @@ export class UploadComponent {
   copy() {
     if (!this.text) return;
     navigator.clipboard.writeText(this.text);
+    alert('Text Copied!');
     this.copied = true;
     setTimeout(() => (this.copied = false), 2000);
   }
@@ -36,16 +48,21 @@ export class UploadComponent {
     if (!this.selectedFile || this.submitted) return;
     this.submitted = true;
     this.apiService
-      .uploadFile(this.sessionId, this.selectedFile)
+      .uploadFile(this.sessionId, this.prompt, this.useMode, this.selectedFile)
       .subscribe((res) => {
         this.text = res.body?.content || '';
+        localStorage.setItem(TEXT, this.text);
+
         this.selectedFile = null;
         this.submitted = false;
       });
   }
 
-  updateText(text: string) {
-    this.text = text;
-    localStorage.setItem(TEXT, text);
+  handlePromptChange() {
+    localStorage.setItem(PROMPT, this.prompt);
+  }
+
+  handleModeChange(event: any) {
+    localStorage.setItem(MODE, event.value);
   }
 }

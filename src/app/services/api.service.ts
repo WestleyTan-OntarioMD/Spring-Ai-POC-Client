@@ -46,6 +46,8 @@ export class ApiService {
 
   uploadFile(
     sessionId: string,
+    prompt: string,
+    useLLM: string,
     file: File
   ): Observable<HttpResponse<{ content: string }>> {
     const formData = new FormData();
@@ -56,6 +58,8 @@ export class ApiService {
       {
         params: {
           'session-id': sessionId,
+          prompt: prompt,
+          'use-llm': useLLM,
         },
         observe: 'response',
       }

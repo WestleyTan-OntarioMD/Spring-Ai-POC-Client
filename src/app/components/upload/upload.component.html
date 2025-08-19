@@ -4,15 +4,43 @@
   </div>
 
   <div class="d-flex my-2 flex-rows justify-content-between">
-    <button (click)="onUpload()" mat-raised-button color="primary" class="w-25">
+    <button
+      (click)="onUpload()"
+      mat-raised-button
+      color="primary"
+      class="w-25"
+      [disabled]="!selectedFile || submitted"
+    >
       Upload
     </button>
-    <button (click)="copy()" mat-raised-button color="primary" class="w-25">
-      {{ copied ? "Copied !!!" : "Copy" }}
-    </button>
+    <mat-form-field appearance="fill" class="w-25">
+      <mat-label>Choose Mode For Image Function</mat-label>
+      <mat-select
+        (selectionChange)="handleModeChange($event)"
+        [(value)]="useMode"
+      >
+        <mat-option *ngFor="let mode of modes" [value]="mode.key">
+          {{ mode.value }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
   <mat-form-field appearance="fill" class="mt-4" class="w-100">
-    <mat-label>Message</mat-label>
-    <textarea matInput [(ngModel)]="text" rows="28"></textarea>
+    <mat-label>Optinal Prompt</mat-label>
+    <input
+      matInput
+      [(ngModel)]="prompt"
+      (change)="handlePromptChange()"
+      placeholder="Describe what do you see on this picture?"
+    />
   </mat-form-field>
+  <mat-card>
+    <mat-card-content
+      oncontextmenu="return false;"
+      [innerHTML]="text"
+      (contextmenu)="copy()"
+      class="w-100 text-white"
+      style="height: 65vh"
+    ></mat-card-content>
+  </mat-card>
 </main>
