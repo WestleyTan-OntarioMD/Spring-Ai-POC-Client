@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { AppComponent } from './app.component';
 import { ChatComponent } from './components/chat/chat.component';
@@ -23,6 +24,7 @@ import { AppErrorHandler } from './services/app-error-handler';
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,
+    MatProgressBarModule,
     MatInputModule,
     MatSelectModule,
     BrowserModule,
