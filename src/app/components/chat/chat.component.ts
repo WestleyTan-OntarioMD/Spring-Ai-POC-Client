@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { catchError, EMPTY, map, tap } from 'rxjs';
@@ -57,6 +57,7 @@ export class ChatComponent {
     localStorage.setItem(APP_MODEL, event.value);
   }
 
+  @ViewChild('message') message: ElementRef = <ElementRef>{};
   constructor(
     private apiService: ApiService,
     private router: Router,
@@ -121,6 +122,7 @@ export class ChatComponent {
           this.addToChats(this.sessionId, false, res.body?.response as string);
           this.form.get('message')?.setValue('');
           this.scrollToBottom();
+          this.message.nativeElement.focus();
         }),
         catchError(() => {
           this.buttonDisabled = false;

@@ -58,7 +58,12 @@
 
       <mat-form-field appearance="fill" class="mt-4">
         <mat-label>Message</mat-label>
-        <textarea matInput formControlName="message" rows="15"></textarea>
+        <textarea
+          matInput
+          formControlName="message"
+          rows="15"
+          #message
+        ></textarea>
       </mat-form-field>
 
       <button
@@ -81,23 +86,16 @@
     <div class="d-flex flex-column justify-content-start chat-container">
       <ng-container *ngIf="chatsMap[sessionId] as chats">
         <ng-container *ngFor="let chat of chats">
-          <mat-card
-            class="w-75 mb-1"
-            [class.me-auto]="!chat.isUser"
-            [class.ms-auto]="chat.isUser"
+          <div
+            class="w-75 mb-1 alert"
+            [ngClass]="{
+              'text-end alert-primary ms-auto': chat.isUser,
+              'text-start alert-secondary me-auto': !chat.isUser
+            }"
           >
-            <mat-card-content
-              class="text-white"
-              [ngClass]="{
-                'text-end': chat.isUser,
-                'text-start': !chat.isUser
-              }"
-            >
-              <h4>{{ chat?.isUser ? "User" : "Assistant" }}</h4>
-              <p>{{ chat.content }}</p>
-            </mat-card-content>
-          </mat-card>
-
+            <h4>{{ chat?.isUser ? "User" : "Assistant" }}</h4>
+            <p>{{ chat.content }}</p>
+          </div>
           <p
             class="mb-3 w-100"
             [ngClass]="{
