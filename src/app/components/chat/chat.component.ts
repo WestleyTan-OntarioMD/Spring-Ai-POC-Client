@@ -1,7 +1,7 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { catchError, delay, EMPTY, map, of, tap } from 'rxjs';
+import { catchError, EMPTY, map, tap } from 'rxjs';
 import { Chat } from 'src/app/models/chat';
 import { ChatRequest } from 'src/app/models/chat-request';
 import { ApiService } from 'src/app/services/api.service';
@@ -57,7 +57,6 @@ export class ChatComponent {
     localStorage.setItem(APP_MODEL, event.value);
   }
 
-  @ViewChild('chatContainer') chatContainer: ElementRef = <ElementRef>{};
   constructor(
     private apiService: ApiService,
     private router: Router,
@@ -99,6 +98,9 @@ export class ChatComponent {
   generateSessionId() {
     const id = uuidv4();
     localStorage.setItem('sessionId', id);
+    this.chatsMap = {};
+    localStorage.setItem(CHAT, JSON.stringify({}));
+
     this.router.navigate([], {
       queryParams: {
         sessionId: id,
