@@ -46,6 +46,7 @@
     <mat-form-field appearance="fill" class="mt-4" class="w-100">
       <mat-label>Optinal Prompt</mat-label>
       <input
+        [disabled]="!useMode"
         matInput
         [(ngModel)]="prompt"
         (change)="handlePromptChange()"
