@@ -115,6 +115,8 @@ export class ChatComponent {
     this.buttonDisabled = true;
     const formVal = this.form.value as ChatRequest;
     this.addToChats(this.sessionId, true, formVal.message);
+    this.scrollToBottom();
+
     this.apiService
       .sendMessage(this.sessionId, formVal)
       .pipe(
