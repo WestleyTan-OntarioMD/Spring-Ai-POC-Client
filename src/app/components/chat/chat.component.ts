@@ -93,7 +93,7 @@ export class ChatComponent {
     }
     chats.push([new Chat(true, userContent), new Chat(false, adminContent)]);
 
-    localStorage.setItem(CHAT, JSON.stringify(chats));
+    localStorage.setItem(CHAT, JSON.stringify(this.chatsMap));
   }
 
   generateSessionId() {
@@ -136,8 +136,7 @@ export class ChatComponent {
   }
 
   scrollToBottom() {
-    const el = this.chatContainer.nativeElement;
-    if (!el) return;
-    el.scrollTop = el.scrollHeight;
+    const el = document.getElementById('bottom-placeholder');
+    el?.scrollIntoView();
   }
 }
