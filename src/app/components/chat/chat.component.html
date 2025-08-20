@@ -75,7 +75,10 @@
         [disabled]="form.invalid"
         [disabled]="buttonDisabled"
       >
-        Submit
+        <div class="spinner-border" *ngIf="buttonDisabled; else avail">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <ng-template #avail> Submit </ng-template>
       </button>
     </form>
   </article>

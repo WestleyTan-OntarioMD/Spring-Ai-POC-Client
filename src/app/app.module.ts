@@ -10,6 +10,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AppComponent } from './app.component';
 import { ChatComponent } from './components/chat/chat.component';
@@ -22,6 +23,7 @@ import { AppErrorHandler } from './services/app-error-handler';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
     MatCardModule,
     MatFormFieldModule,
     MatProgressBarModule,

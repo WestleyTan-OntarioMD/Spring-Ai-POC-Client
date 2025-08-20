@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { catchError, EMPTY, map, tap } from 'rxjs';
+import { catchError, delay, EMPTY, map, tap } from 'rxjs';
 import { Chat } from 'src/app/models/chat';
 import { ChatRequest } from 'src/app/models/chat-request';
 import { ApiService } from 'src/app/services/api.service';
@@ -121,15 +121,14 @@ export class ChatComponent {
         tap((res) => {
           this.addToChats(this.sessionId, false, res.body?.response as string);
           this.form.get('message')?.setValue('');
-          this.scrollToBottom();
-          this.message.nativeElement.focus();
         }),
-        catchError(() => {
-          this.buttonDisabled = false;
-          return EMPTY;
-        })
+        delay(500)
       )
-      .subscribe(() => (this.buttonDisabled = false));
+      .subscribe(() => {
+        this.buttonDisabled = false;
+        this.scrollToBottom();
+        this.message.nativeElement.focus();
+      });
   }
 
   scrollToBottom() {
