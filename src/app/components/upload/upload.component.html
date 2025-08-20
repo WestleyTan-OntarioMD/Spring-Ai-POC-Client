@@ -1,59 +1,65 @@
 <main class="justify-content-between w-100">
-  <div class="w-100 d-flex flex-rows">
-    <input type="file" (change)="onFileSelected($event)" />
-  </div>
-
-  <div class="d-flex my-2 flex-rows justify-content-center align-items-center">
-    <button
-      (click)="onUpload()"
-      mat-raised-button
-      color="primary"
-      class="w-25 mb-3"
-      [disabled]="!selectedFile || submitted"
-    >
-      Upload
-    </button>
-
-    <div class="d-flex flex-rows justify-content-center w-50 mb-2">
-      <mat-progress-bar
-        mode="indeterminate"
-        class="w-50"
-        *ngIf="submitted; else nonsubmitted"
-      ></mat-progress-bar>
-      <ng-template #nonsubmitted>
-        <div>Upload Image or PDF</div>
-        <div class="mx-1">●</div>
-        <div>Right click below to copy</div>
-      </ng-template>
+  <article>
+    <div class="w-100 d-flex flex-rows">
+      <input type="file" (change)="onFileSelected($event)" />
     </div>
 
-    <mat-form-field appearance="fill" class="w-25">
-      <mat-label>Choose Mode For Image Function</mat-label>
-      <mat-select
-        (selectionChange)="handleModeChange($event)"
-        [(value)]="useMode"
+    <div
+      class="d-flex my-2 flex-rows justify-content-center align-items-center"
+    >
+      <button
+        (click)="onUpload()"
+        mat-raised-button
+        color="primary"
+        class="w-25 mb-3"
+        [disabled]="!selectedFile || submitted"
       >
-        <mat-option *ngFor="let mode of modes" [value]="mode.key">
-          {{ mode.value }}
-        </mat-option>
-      </mat-select>
+        Upload
+      </button>
+
+      <div class="d-flex flex-rows justify-content-center w-50 mb-2">
+        <mat-progress-bar
+          mode="indeterminate"
+          class="w-50"
+          *ngIf="submitted; else nonsubmitted"
+        ></mat-progress-bar>
+        <ng-template #nonsubmitted>
+          <div>Upload Image or PDF</div>
+          <div class="mx-1">●</div>
+          <div>Right click below to copy</div>
+        </ng-template>
+      </div>
+
+      <mat-form-field appearance="fill" class="w-25">
+        <mat-label>Choose Mode For Image Function</mat-label>
+        <mat-select
+          (selectionChange)="handleModeChange($event)"
+          [(value)]="useMode"
+          [disabled]="submitted"
+        >
+          <mat-option *ngFor="let mode of modes" [value]="mode.key">
+            {{ mode.value }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <mat-form-field appearance="fill" class="mt-4" class="w-100">
+      <mat-label>Optinal Prompt</mat-label>
+      <input
+        matInput
+        [(ngModel)]="prompt"
+        (change)="handlePromptChange()"
+        placeholder="Describe what do you see on this picture?"
+      />
     </mat-form-field>
-  </div>
-  <mat-form-field appearance="fill" class="mt-4" class="w-100">
-    <mat-label>Optinal Prompt</mat-label>
-    <input
-      matInput
-      [(ngModel)]="prompt"
-      (change)="handlePromptChange()"
-      placeholder="Describe what do you see on this picture?"
-    />
-  </mat-form-field>
+  </article>
+
   <mat-card>
     <mat-card-content
       oncontextmenu="return false;"
       [innerHTML]="text"
       (contextmenu)="copy()"
-      class="w-100 text-white content-container"
+      class="w-100 h-100 text-white content-container"
     ></mat-card-content>
   </mat-card>
 </main>
