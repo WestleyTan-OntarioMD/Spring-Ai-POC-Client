@@ -1,14 +1,14 @@
 <main class="justify-content-between w-100">
   <article>
     <div class="w-100 d-flex flex-rows">
-      <input type="file" (change)="onFileSelected($event)" />
+      <input type="file" (change)="onFileSelected($event)" #fileInput />
     </div>
 
     <div
       class="d-flex my-2 flex-rows justify-content-center align-items-center"
     >
       <button
-        (click)="onUpload()"
+        (click)="onUpload(fileInput)"
         mat-raised-button
         color="primary"
         class="w-25 mb-3"

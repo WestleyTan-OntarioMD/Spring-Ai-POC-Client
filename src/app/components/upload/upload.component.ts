@@ -44,7 +44,7 @@ export class UploadComponent {
     this.copied = true;
     setTimeout(() => (this.copied = false), 2000);
   }
-  onUpload() {
+  onUpload(fileInput: HTMLInputElement) {
     if (!this.selectedFile || this.submitted) return;
     this.submitted = true;
     this.saveText('');
@@ -53,6 +53,7 @@ export class UploadComponent {
       .subscribe((res) => {
         this.saveText(res.body?.content || '');
 
+        fileInput.value = '';
         this.selectedFile = null;
         this.submitted = false;
       });
