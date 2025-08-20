@@ -80,9 +80,8 @@
 
     <div class="d-flex flex-column justify-content-start chat-container">
       <ng-container *ngIf="chatsMap[sessionId] as chats">
-        <ng-container *ngFor="let pair of chats">
+        <ng-container *ngFor="let chat of chats">
           <mat-card
-            *ngFor="let chat of pair"
             class="w-75 mb-1"
             [class.me-auto]="!chat.isUser"
             [class.ms-auto]="chat.isUser"
@@ -99,13 +98,26 @@
             </mat-card-content>
           </mat-card>
 
-          <p class="text-center my-1" *ngIf="pair[0] as pF">
-            {{ pF.timestamp | date : "short" }}
+          <p
+            class="mb-3 w-100"
+            [ngClass]="{
+              'text-end': !chat.isUser,
+              'text-start': chat.isUser
+            }"
+          >
+            <span
+              class="w-75 d-inline-block"
+              [ngClass]="{
+                'text-end': chat.isUser,
+                'text-start': !chat.isUser
+              }"
+            >
+              {{ chat.timestamp | date : "short" }}
+            </span>
           </p>
         </ng-container>
-
-        <span id="bottom-placeholder"></span>
       </ng-container>
+      <span id="bottom-placeholder"></span>
     </div>
   </article>
 </main>

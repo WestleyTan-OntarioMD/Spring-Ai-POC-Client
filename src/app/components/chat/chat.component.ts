@@ -16,7 +16,7 @@ const CHAT = 'APP_CHATS';
 })
 export class ChatComponent {
   sessionId = localStorage.getItem('sessionId') || '';
-  chatsMap: { [sessionId: string]: [Chat, Chat][] } = JSON.parse(
+  chatsMap: { [sessionId: string]: Chat[] } = JSON.parse(
     localStorage.getItem(CHAT) || JSON.stringify({})
   );
   models: string[] = [];
@@ -75,12 +75,8 @@ export class ChatComponent {
       .subscribe((res) => (this.models = res.body || []));
   }
 
-  private addToChats(
-    sessionId: string,
-    userContent: string,
-    adminContent: string
-  ) {
-    if (!userContent) return;
+  private addToChats(sessionId: string, isUser: boolean, content: string) {
+    if (!content) return;
     let chats = this.chatsMap[sessionId];
     if (!chats) {
       chats = [];
@@ -90,7 +86,7 @@ export class ChatComponent {
     while (chats.length > 20) {
       chats.shift();
     }
-    chats.push([new Chat(true, userContent), new Chat(false, adminContent)]);
+    chats.push(new Chat(isUser, content));
 
     localStorage.setItem(CHAT, JSON.stringify(this.chatsMap));
   }
@@ -116,16 +112,13 @@ export class ChatComponent {
     }
 
     this.buttonDisabled = true;
-    const formVal = this.form.value;
+    const formVal = this.form.value as ChatRequest;
+    this.addToChats(this.sessionId, true, formVal.message);
     this.apiService
-      .sendMessage(this.sessionId, formVal as ChatRequest)
+      .sendMessage(this.sessionId, formVal)
       .pipe(
         tap((res) => {
-          this.addToChats(
-            this.sessionId,
-            res.body?.message as string,
-            res.body?.response as string
-          );
+          this.addToChats(this.sessionId, false, res.body?.response as string);
           this.form.get('message')?.setValue('');
           this.scrollToBottom();
         }),
