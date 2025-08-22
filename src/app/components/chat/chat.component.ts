@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { catchError, delay, EMPTY, map, tap } from 'rxjs';
+import { delay, filter, map, tap } from 'rxjs';
 import { Chat } from 'src/app/models/chat';
 import { ChatRequest } from 'src/app/models/chat-request';
 import { ApiService } from 'src/app/services/api.service';
@@ -15,7 +15,7 @@ const CHAT = 'APP_CHATS';
   styleUrls: ['./chat.component.scss'],
 })
 export class ChatComponent {
-  sessionId = localStorage.getItem('sessionId') || '';
+  sessionId = localStorage.getItem('sessionId') || uuidv4();
   chatsMap: { [sessionId: string]: Chat[] } = JSON.parse(
     localStorage.getItem(CHAT) || JSON.stringify({})
   );
@@ -120,8 +120,10 @@ export class ChatComponent {
     this.apiService
       .sendMessage(this.sessionId, formVal)
       .pipe(
+        filter((res) => !!res.body?.sessionId),
         tap((res) => {
-          this.addToChats(this.sessionId, false, res.body?.response as string);
+          this.addToChats(this.sessionId, false, res.body!.response as string);
+          this.sessionId = res.body!.sessionId as string;
           this.form.get('message')?.setValue('');
         }),
         delay(500)
