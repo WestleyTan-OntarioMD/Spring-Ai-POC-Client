@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { delay, filter, map, tap } from 'rxjs';
+import { concatMap, delay, filter, map, of, tap } from 'rxjs';
 import { Chat } from 'src/app/models/chat';
 import { ChatRequest } from 'src/app/models/chat-request';
 import { ApiService } from 'src/app/services/api.service';
@@ -115,18 +115,19 @@ export class ChatComponent {
     this.buttonDisabled = true;
     const formVal = this.form.value as ChatRequest;
     this.addToChats(this.sessionId, true, formVal.message);
-    this.scrollToBottom();
 
-    this.apiService
-      .sendMessage(this.sessionId, formVal)
+    of(true)
       .pipe(
+        delay(1),
+        tap(() => this.scrollToBottom()),
+        concatMap(() => this.apiService.sendMessage(this.sessionId, formVal)),
         filter((res) => !!res.body?.sessionId),
         tap((res) => {
           this.addToChats(this.sessionId, false, res.body!.response as string);
           this.sessionId = res.body!.sessionId as string;
           this.form.get('message')?.setValue('');
         }),
-        delay(500)
+        delay(100)
       )
       .subscribe(() => {
         this.buttonDisabled = false;
