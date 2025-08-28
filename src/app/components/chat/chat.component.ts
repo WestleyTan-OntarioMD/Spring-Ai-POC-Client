@@ -123,7 +123,7 @@ export class ChatComponent {
         concatMap(() => this.apiService.sendMessage(this.sessionId, formVal)),
         filter((res) => !!res.body?.sessionId),
         tap((res) => {
-          this.addToChats(this.sessionId, false, res.body!.response as string);
+          this.addToChats(this.sessionId, false, res.body!.message as string);
           this.sessionId = res.body!.sessionId as string;
           this.form.get('message')?.setValue('');
         }),
