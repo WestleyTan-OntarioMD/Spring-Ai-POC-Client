@@ -16,7 +16,7 @@ export class ApiService {
   healthCheck() {}
 
   sendMessage(
-    sessionId: string,
+    sessionKey: string,
     dto: UserQuery
   ): Observable<HttpResponse<Conversation>> {
     return this.httpClient.post<Conversation>(
@@ -24,7 +24,7 @@ export class ApiService {
       dto,
       {
         params: {
-          'session-id': sessionId,
+          'session-key': sessionKey,
         },
         observe: 'response',
       }
@@ -38,13 +38,13 @@ export class ApiService {
   }
 
   getConversationsBySession(
-    sessionId: string
+    sessionKey: string
   ): Observable<HttpResponse<Conversation[]>> {
     return this.httpClient.get<Conversation[]>(
       `${this.endpoint}/chat/conversations`,
       {
         params: {
-          'session-id': sessionId,
+          'session-key': sessionKey,
         },
         observe: 'response',
       }
@@ -57,6 +57,16 @@ export class ApiService {
     });
   }
 
+  generateSession(): Observable<HttpResponse<SessionId>> {
+    return this.httpClient.post<SessionId>(
+      `${this.endpoint}/chat/sessions`,
+      {},
+      {
+        observe: 'response',
+      }
+    );
+  }
+
   deleteSessionById(id: string): Observable<HttpResponse<any>> {
     return this.httpClient.delete<any>(`${this.endpoint}/chat/sessions/${id}`, {
       observe: 'response',
@@ -64,7 +74,7 @@ export class ApiService {
   }
 
   uploadFile(
-    sessionId: string,
+    sessionKey: string,
     prompt: string,
     useLLM: string,
     file: File
@@ -76,7 +86,7 @@ export class ApiService {
       formData,
       {
         params: {
-          'session-id': sessionId,
+          'session-key': sessionKey,
           prompt: prompt,
           'use-llm': useLLM,
         },

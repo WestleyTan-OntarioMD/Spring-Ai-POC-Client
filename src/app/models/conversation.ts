@@ -1,7 +1,7 @@
 export class Conversation {
   id?: string = '';
-  isUser: boolean = false;
+  user: boolean = false;
   createDt: Date = new Date();
   message: string = '';
-  sessionId: string = '';
+  sessionKey: string = '';
 }

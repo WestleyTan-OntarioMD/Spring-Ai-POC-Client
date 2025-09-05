@@ -1,13 +1,12 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { concatMap, delay, filter, map, of, tap } from 'rxjs';
+import { concatMap, delay, filter, map, Observable, of, tap } from 'rxjs';
 
 import { Conversation } from 'src/app/models/conversation';
 import { SessionId } from 'src/app/models/session-id';
 import { UserQuery } from 'src/app/models/use-query';
 import { ApiService } from 'src/app/services/api.service';
-import { v4 as uuidv4 } from 'uuid';
 
 const APP_MODEL = 'APP_MODEL';
 @Component({
@@ -16,7 +15,7 @@ const APP_MODEL = 'APP_MODEL';
   styleUrls: ['./chat.component.scss'],
 })
 export class ChatComponent {
-  sessionId = localStorage.getItem('sessionId') || uuidv4();
+  sessionKey = localStorage.getItem('sessionKey') || '';
   sessions: SessionId[] = [];
   conversations: Conversation[] = [];
   models: string[] = [];
@@ -59,69 +58,84 @@ export class ChatComponent {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    this.fetchSessions();
+    this.getSessions().subscribe((sessions) => (this.sessions = sessions));
 
     setTimeout(() => {
       this.scrollToBottom();
     }, 1000);
 
     this.route.queryParamMap
-      .pipe(map((params: ParamMap) => params.get('sessionId')))
-      .subscribe((id) => (this.sessionId = id || ''));
+      .pipe(
+        map((params: ParamMap) => params.get('sessionKey') || ''),
+        tap((id) => (this.sessionKey = id)),
+        filter((id) => !!id)
+      )
+      .subscribe((id) => this.fetchConversations(id));
 
     this.apiService
       .getModels()
       .subscribe((res) => (this.models = res.body || []));
   }
 
-  handleSessionDelete(id: string) {
-    this.apiService.deleteSessionById(id).subscribe(() => this.fetchSessions());
-  }
+  handleSessionDelete() {
+    if (!confirm(`Are you sure you want to delete this conversation?`)) return;
 
-  fetchConversations(event: any) {
-    if (!event.value) {
-      this.conversations = [];
-      return;
-    }
+    const session = this.sessions.find((s) => s.key === this.sessionKey);
+    if (!session) return;
 
     this.apiService
-      .getConversationsBySession(event.value)
+      .deleteSessionById(session.id)
+      .subscribe(() => this.generateSessionKey());
+  }
+
+  fetchConversations(key: string | null) {
+    if (!key) return;
+
+    this.apiService
+      .getConversationsBySession(key)
       .pipe(map((res) => res.body || []))
       .subscribe((conversations) => (this.conversations = conversations));
   }
 
-  fetchSessions() {
-    this.apiService
-      .getAllSessions()
-      .pipe(map((res) => res.body || []))
-      .subscribe((sessionIds) => (this.sessions = sessionIds));
+  getSessions(): Observable<SessionId[]> {
+    return this.apiService.getAllSessions().pipe(map((res) => res.body || []));
   }
 
   handleModelChange(event: any) {
     localStorage.setItem(APP_MODEL, event.value);
   }
 
-  private addToChats(sessionId: string, isUser: boolean, message: string) {
+  private addToChats(sessionKey: string, user: boolean, message: string) {
     while (this.conversations.length > 20) this.conversations.shift();
 
     this.conversations.push({
-      isUser,
+      user,
       createDt: new Date(),
       message,
-      sessionId,
+      sessionKey,
     });
   }
 
-  generateSessionId() {
-    const id = uuidv4();
-    localStorage.setItem('sessionId', id);
-    this.conversations = [];
-
-    this.router.navigate([], {
-      queryParams: {
-        sessionId: id,
-      },
-    });
+  generateSessionKey() {
+    this.apiService
+      .generateSession()
+      .pipe(
+        map((res) => res.body!),
+        tap((sessionId: SessionId) => {
+          const sessionKey = sessionId.key;
+          localStorage.setItem('sessionKey', sessionKey);
+          this.sessionKey = sessionKey;
+        }),
+        concatMap(() => this.getSessions()),
+        tap((sessions) => (this.sessions = sessions))
+      )
+      .subscribe(() =>
+        this.router.navigate([], {
+          queryParams: {
+            sessionKey: this.sessionKey,
+          },
+        })
+      );
   }
 
   sendChat() {
@@ -133,17 +147,17 @@ export class ChatComponent {
 
     this.buttonDisabled = true;
     const formVal = this.form.value as UserQuery;
-    this.addToChats(this.sessionId, true, formVal.message);
+    this.addToChats(this.sessionKey, true, formVal.message);
 
     of(true)
       .pipe(
         delay(1),
         tap(() => this.scrollToBottom()),
-        concatMap(() => this.apiService.sendMessage(this.sessionId, formVal)),
-        filter((res) => !!res.body?.sessionId),
+        concatMap(() => this.apiService.sendMessage(this.sessionKey, formVal)),
+        filter((res) => !!res.body?.sessionKey),
         tap((res) => {
-          this.addToChats(this.sessionId, false, res.body!.message as string);
-          this.sessionId = res.body!.sessionId as string;
+          this.addToChats(this.sessionKey, false, res.body!.message as string);
+          this.sessionKey = res.body!.sessionKey as string;
           this.form.get('message')?.setValue('');
         }),
         delay(100)
