@@ -117,7 +117,10 @@
           }"
         >
           <h4>{{ conversation.user ? "User" : "Assistant" }}</h4>
-          <p>{{ conversation.message }}</p>
+          <div
+            [innerHTML]="conversation.message"
+            style="white-space: pre-wrap"
+          ></div>
         </div>
         <p
           class="mb-3 w-100"
