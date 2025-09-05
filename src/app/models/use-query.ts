@@ -1,4 +1,4 @@
-export class ChatRequest {
+export class UserQuery {
   message: string = '';
   modelIndex: number = 0;
   temperature: number = 0.8;

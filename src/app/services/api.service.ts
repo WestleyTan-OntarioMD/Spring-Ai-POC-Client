@@ -1,8 +1,10 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ChatRequest } from '../models/chat-request';
 import { Observable } from 'rxjs';
-import { ChatResponse } from '../models/chat-response';
+
+import { UserQuery } from '../models/use-query';
+import { Conversation } from '../models/conversation';
+import { SessionId } from '../models/session-id';
 
 @Injectable({
   providedIn: 'root',
@@ -15,9 +17,9 @@ export class ApiService {
 
   sendMessage(
     sessionId: string,
-    dto: ChatRequest
-  ): Observable<HttpResponse<ChatResponse>> {
-    return this.httpClient.post<ChatResponse>(
+    dto: UserQuery
+  ): Observable<HttpResponse<Conversation>> {
+    return this.httpClient.post<Conversation>(
       `${this.endpoint}/chat/conversations`,
       dto,
       {
@@ -35,14 +37,31 @@ export class ApiService {
     });
   }
 
-  // getMessages(sessionId: string, dto: ChatRequest) {
-  //   return this.httpClient.post(`${this.endpoint}/chat/generate`, dto, {
-  //     params: {
-  //       'session-id': sessionId,
-  //     },
-  //     observe: 'response',
-  //   });
-  // }
+  getConversationsBySession(
+    sessionId: string
+  ): Observable<HttpResponse<Conversation[]>> {
+    return this.httpClient.get<Conversation[]>(
+      `${this.endpoint}/chat/conversations`,
+      {
+        params: {
+          'session-id': sessionId,
+        },
+        observe: 'response',
+      }
+    );
+  }
+
+  getAllSessions(): Observable<HttpResponse<SessionId[]>> {
+    return this.httpClient.get<SessionId[]>(`${this.endpoint}/chat/sessions`, {
+      observe: 'response',
+    });
+  }
+
+  deleteSessionById(id: string): Observable<HttpResponse<any>> {
+    return this.httpClient.delete<any>(`${this.endpoint}/chat/sessions/${id}`, {
+      observe: 'response',
+    });
+  }
 
   uploadFile(
     sessionId: string,

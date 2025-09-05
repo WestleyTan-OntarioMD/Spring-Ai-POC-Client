@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { concatMap, delay, filter, map, of, tap } from 'rxjs';
 import { Chat } from 'src/app/models/chat';
-import { ChatRequest } from 'src/app/models/chat-request';
+import { UserQuery } from 'src/app/models/use-query';
 import { ApiService } from 'src/app/services/api.service';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -113,7 +113,7 @@ export class ChatComponent {
     }
 
     this.buttonDisabled = true;
-    const formVal = this.form.value as ChatRequest;
+    const formVal = this.form.value as UserQuery;
     this.addToChats(this.sessionId, true, formVal.message);
 
     of(true)
