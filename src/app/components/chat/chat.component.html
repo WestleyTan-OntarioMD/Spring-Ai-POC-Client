@@ -5,6 +5,15 @@
       <mat-form-field appearance="fill" class="col-8">
         <mat-label>Session ID</mat-label>
         <input matInput [(ngModel)]="sessionId" />
+        <mat-select (selectionChange)="fetchConversations($event)">
+          <mat-option
+            *ngFor="let session of sessions; index as i"
+            [value]="session.id"
+          >
+            {{ session.id }}
+            <span (click)="handleSessionDelete(session.id)">✕</span>
+          </mat-option>
+        </mat-select>
       </mat-form-field>
       <button
         mat-raised-button
@@ -87,36 +96,34 @@
     <h4>Chat Details</h4>
 
     <div class="d-flex flex-column justify-content-start chat-container">
-      <ng-container *ngIf="chatsMap[sessionId] as chats">
-        <ng-container *ngFor="let chat of chats">
-          <div
-            class="w-75 mb-1 alert"
+      <ng-container *ngFor="let conversation of conversations">
+        <div
+          class="w-75 mb-1 alert"
+          [ngClass]="{
+            'text-end alert-primary ms-auto': conversation.isUser,
+            'text-start alert-secondary me-auto': !conversation.isUser
+          }"
+        >
+          <h4>{{ conversation.isUser ? "User" : "Assistant" }}</h4>
+          <p>{{ conversation.message }}</p>
+        </div>
+        <p
+          class="mb-3 w-100"
+          [ngClass]="{
+            'text-end': !conversation.isUser,
+            'text-start': conversation.isUser
+          }"
+        >
+          <span
+            class="w-75 d-inline-block"
             [ngClass]="{
-              'text-end alert-primary ms-auto': chat.isUser,
-              'text-start alert-secondary me-auto': !chat.isUser
+              'text-end': conversation.isUser,
+              'text-start': !conversation.isUser
             }"
           >
-            <h4>{{ chat?.isUser ? "User" : "Assistant" }}</h4>
-            <p>{{ chat.content }}</p>
-          </div>
-          <p
-            class="mb-3 w-100"
-            [ngClass]="{
-              'text-end': !chat.isUser,
-              'text-start': chat.isUser
-            }"
-          >
-            <span
-              class="w-75 d-inline-block"
-              [ngClass]="{
-                'text-end': chat.isUser,
-                'text-start': !chat.isUser
-              }"
-            >
-              {{ chat.timestamp | date : "short" }}
-            </span>
-          </p>
-        </ng-container>
+            {{ conversation.createDt | date : "short" }}
+          </span>
+        </p>
       </ng-container>
       <span id="bottom-placeholder"></span>
     </div>

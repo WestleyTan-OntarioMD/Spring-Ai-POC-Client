@@ -2,13 +2,14 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { concatMap, delay, filter, map, of, tap } from 'rxjs';
-import { Chat } from 'src/app/models/chat';
+
+import { Conversation } from 'src/app/models/conversation';
+import { SessionId } from 'src/app/models/session-id';
 import { UserQuery } from 'src/app/models/use-query';
 import { ApiService } from 'src/app/services/api.service';
 import { v4 as uuidv4 } from 'uuid';
 
 const APP_MODEL = 'APP_MODEL';
-const CHAT = 'APP_CHATS';
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
@@ -16,9 +17,8 @@ const CHAT = 'APP_CHATS';
 })
 export class ChatComponent {
   sessionId = localStorage.getItem('sessionId') || uuidv4();
-  chatsMap: { [sessionId: string]: Chat[] } = JSON.parse(
-    localStorage.getItem(CHAT) || JSON.stringify({})
-  );
+  sessions: SessionId[] = [];
+  conversations: Conversation[] = [];
   models: string[] = [];
   buttonDisabled = false;
 
@@ -53,16 +53,14 @@ export class ChatComponent {
     ]),
   });
 
-  handleModelChange(event: any) {
-    localStorage.setItem(APP_MODEL, event.value);
-  }
-
   @ViewChild('message') message: ElementRef = <ElementRef>{};
   constructor(
     private apiService: ApiService,
     private router: Router,
     private route: ActivatedRoute
   ) {
+    this.fetchSessions();
+
     setTimeout(() => {
       this.scrollToBottom();
     }, 1000);
@@ -76,27 +74,48 @@ export class ChatComponent {
       .subscribe((res) => (this.models = res.body || []));
   }
 
-  private addToChats(sessionId: string, isUser: boolean, content: string) {
-    if (!content) return;
-    let chats = this.chatsMap[sessionId];
-    if (!chats) {
-      chats = [];
-      this.chatsMap[sessionId] = chats;
+  handleSessionDelete(id: string) {
+    this.apiService.deleteSessionById(id).subscribe(() => this.fetchSessions());
+  }
+
+  fetchConversations(event: any) {
+    if (!event.value) {
+      this.conversations = [];
+      return;
     }
 
-    while (chats.length > 20) {
-      chats.shift();
-    }
-    chats.push(new Chat(isUser, content));
+    this.apiService
+      .getConversationsBySession(event.value)
+      .pipe(map((res) => res.body || []))
+      .subscribe((conversations) => (this.conversations = conversations));
+  }
 
-    localStorage.setItem(CHAT, JSON.stringify(this.chatsMap));
+  fetchSessions() {
+    this.apiService
+      .getAllSessions()
+      .pipe(map((res) => res.body || []))
+      .subscribe((sessionIds) => (this.sessions = sessionIds));
+  }
+
+  handleModelChange(event: any) {
+    localStorage.setItem(APP_MODEL, event.value);
+  }
+
+  private addToChats(sessionId: string, isUser: boolean, message: string) {
+    while (this.conversations.length > 20) this.conversations.shift();
+
+    this.conversations.push({
+      isUser,
+      createDt: new Date(),
+      message,
+      sessionId,
+    });
   }
 
   generateSessionId() {
     const id = uuidv4();
     localStorage.setItem('sessionId', id);
-    this.chatsMap = {};
-    localStorage.setItem(CHAT, JSON.stringify({}));
+    this.conversations = [];
 
     this.router.navigate([], {
       queryParams: {
