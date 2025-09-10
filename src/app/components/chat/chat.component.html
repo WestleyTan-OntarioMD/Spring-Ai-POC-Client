@@ -51,7 +51,7 @@
         </mat-select>
       </mat-form-field>
 
-      <div class="d-flex flex-rows justify-content-between">
+      <!-- <div class="d-flex flex-rows justify-content-between">
         <mat-form-field appearance="fill" class="w-25">
           <mat-label>Temperature</mat-label>
           <input matInput formControlName="temperature" />
@@ -75,6 +75,10 @@
           <input matInput formControlName="frequencyPenalty" />
           <mat-hint>Frequency penalty (-2 to 2)</mat-hint>
         </mat-form-field>
+      </div> -->
+
+      <div class="w-100 d-flex flex-rows">
+        <input type="file" (change)="onFileSelected($event)" #fileInput />
       </div>
 
       <mat-form-field appearance="fill" class="mt-4">
@@ -92,7 +96,7 @@
         type="button"
         color="primary"
         class="mt-3"
-        (click)="sendChat()"
+        (click)="sendChat(fileInput)"
         [disabled]="form.invalid"
         [disabled]="buttonDisabled"
       >

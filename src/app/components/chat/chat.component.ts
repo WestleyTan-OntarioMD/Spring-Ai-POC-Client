@@ -15,6 +15,8 @@ const APP_MODEL = 'APP_MODEL';
   styleUrls: ['./chat.component.scss'],
 })
 export class ChatComponent {
+  selectedFile: File | null = null;
+
   sessionKey = localStorage.getItem('sessionKey') || '';
   sessions: SessionId[] = [];
   conversations: Conversation[] = [];
@@ -30,26 +32,26 @@ export class ChatComponent {
       parseInt(localStorage.getItem(APP_MODEL) || '0'),
       [Validators.required, Validators.min(0)]
     ),
-    temperature: new FormControl(0.8, [
-      Validators.required,
-      Validators.min(0),
-      Validators.max(2),
-    ]),
-    topP: new FormControl(0.1, [
-      Validators.required,
-      Validators.min(0),
-      Validators.max(1),
-    ]),
-    presencePenalty: new FormControl(0, [
-      Validators.required,
-      Validators.min(-2),
-      Validators.max(2),
-    ]),
-    frequencyPenalty: new FormControl(0, [
-      Validators.required,
-      Validators.min(-2),
-      Validators.max(2),
-    ]),
+    // temperature: new FormControl(0.8, [
+    //   Validators.required,
+    //   Validators.min(0),
+    //   Validators.max(2),
+    // ]),
+    // topP: new FormControl(0.1, [
+    //   Validators.required,
+    //   Validators.min(0),
+    //   Validators.max(1),
+    // ]),
+    // presencePenalty: new FormControl(0, [
+    //   Validators.required,
+    //   Validators.min(-2),
+    //   Validators.max(2),
+    // ]),
+    // frequencyPenalty: new FormControl(0, [
+    //   Validators.required,
+    //   Validators.min(-2),
+    //   Validators.max(2),
+    // ]),
   });
 
   @ViewChild('message') message: ElementRef = <ElementRef>{};
@@ -138,7 +140,11 @@ export class ChatComponent {
       );
   }
 
-  sendChat() {
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  sendChat(fileInput: HTMLInputElement) {
     if (this.form.invalid) {
       console.error(this.form.errors);
       alert('Form errors!');
@@ -163,6 +169,8 @@ export class ChatComponent {
         delay(100)
       )
       .subscribe(() => {
+        fileInput.value = '';
+        this.selectedFile = null;
         this.buttonDisabled = false;
         this.scrollToBottom();
         this.message.nativeElement.focus();
