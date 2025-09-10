@@ -15,17 +15,11 @@ export class ApiService {
 
   healthCheck() {}
 
-  sendMessage(
-    sessionKey: string,
-    dto: UserQuery
-  ): Observable<HttpResponse<Conversation>> {
+  sendMessage(dto: any): Observable<HttpResponse<Conversation>> {
     return this.httpClient.post<Conversation>(
       `${this.endpoint}/chat/conversations`,
       dto,
       {
-        params: {
-          'session-key': sessionKey,
-        },
         observe: 'response',
       }
     );

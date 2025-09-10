@@ -155,11 +155,20 @@ export class ChatComponent {
     const formVal = this.form.value as UserQuery;
     this.addToChats(this.sessionKey, true, formVal.message);
 
+    const formData = new FormData();
+    formData.append('session-key', this.sessionKey);
+    formData.append(
+      'userQuery',
+      new Blob([JSON.stringify(formVal)], { type: 'application/json' })
+    );
+    if (this.selectedFile)
+      formData.append('file', this.selectedFile, this.selectedFile.name);
+
     of(true)
       .pipe(
         delay(1),
         tap(() => this.scrollToBottom()),
-        concatMap(() => this.apiService.sendMessage(this.sessionKey, formVal)),
+        concatMap(() => this.apiService.sendMessage(formData)),
         filter((res) => !!res.body?.sessionKey),
         tap((res) => {
           this.addToChats(this.sessionKey, false, res.body!.message as string);
