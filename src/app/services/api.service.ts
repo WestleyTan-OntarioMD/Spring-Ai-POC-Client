@@ -12,15 +12,13 @@ export class ApiService {
   endpoint = 'http://localhost:7000';
   constructor(private httpClient: HttpClient) {}
 
-  healthCheck() {}
-
   sendMessage(dto: any): Observable<HttpResponse<Conversation>> {
     return this.httpClient.post<Conversation>(
       `${this.endpoint}/chat/conversations`,
       dto,
       {
         observe: 'response',
-      }
+      },
     );
   }
 
@@ -31,7 +29,7 @@ export class ApiService {
   }
 
   getConversationsBySession(
-    sessionKey: string
+    sessionKey: string,
   ): Observable<HttpResponse<Conversation[]>> {
     return this.httpClient.get<Conversation[]>(
       `${this.endpoint}/chat/conversations`,
@@ -40,7 +38,7 @@ export class ApiService {
           'session-key': sessionKey,
         },
         observe: 'response',
-      }
+      },
     );
   }
 
@@ -56,7 +54,7 @@ export class ApiService {
       {},
       {
         observe: 'response',
-      }
+      },
     );
   }
 
@@ -70,7 +68,7 @@ export class ApiService {
     sessionKey: string,
     prompt: string,
     useLLM: string,
-    file: File
+    file: File,
   ): Observable<HttpResponse<{ content: string }>> {
     const formData = new FormData();
     formData.append('file', file);
@@ -84,7 +82,7 @@ export class ApiService {
           'use-llm': useLLM,
         },
         observe: 'response',
-      }
+      },
     );
   }
 }

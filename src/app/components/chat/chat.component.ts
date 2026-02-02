@@ -30,35 +30,15 @@ export class ChatComponent {
     ]),
     modelIndex: new FormControl(
       parseInt(localStorage.getItem(APP_MODEL) || '0'),
-      [Validators.required, Validators.min(0)]
+      [Validators.required, Validators.min(0)],
     ),
-    // temperature: new FormControl(0.8, [
-    //   Validators.required,
-    //   Validators.min(0),
-    //   Validators.max(2),
-    // ]),
-    // topP: new FormControl(0.1, [
-    //   Validators.required,
-    //   Validators.min(0),
-    //   Validators.max(1),
-    // ]),
-    // presencePenalty: new FormControl(0, [
-    //   Validators.required,
-    //   Validators.min(-2),
-    //   Validators.max(2),
-    // ]),
-    // frequencyPenalty: new FormControl(0, [
-    //   Validators.required,
-    //   Validators.min(-2),
-    //   Validators.max(2),
-    // ]),
   });
 
   @ViewChild('message') message: ElementRef = <ElementRef>{};
   constructor(
     private apiService: ApiService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {
     this.getSessions().subscribe((sessions) => (this.sessions = sessions));
 
@@ -70,7 +50,7 @@ export class ChatComponent {
       .pipe(
         map((params: ParamMap) => params.get('sessionKey') || ''),
         tap((id) => (this.sessionKey = id)),
-        filter((id) => !!id)
+        filter((id) => !!id),
       )
       .subscribe((id) => this.fetchConversations(id));
 
@@ -129,14 +109,14 @@ export class ChatComponent {
           this.sessionKey = sessionKey;
         }),
         concatMap(() => this.getSessions()),
-        tap((sessions) => (this.sessions = sessions))
+        tap((sessions) => (this.sessions = sessions)),
       )
       .subscribe(() =>
         this.router.navigate([], {
           queryParams: {
             sessionKey: this.sessionKey,
           },
-        })
+        }),
       );
   }
 
@@ -159,7 +139,7 @@ export class ChatComponent {
     formData.append('session-key', this.sessionKey);
     formData.append(
       'userQuery',
-      new Blob([JSON.stringify(formVal)], { type: 'application/json' })
+      new Blob([JSON.stringify(formVal)], { type: 'application/json' }),
     );
     if (this.selectedFile)
       formData.append('file', this.selectedFile, this.selectedFile.name);
@@ -175,7 +155,7 @@ export class ChatComponent {
           this.sessionKey = res.body!.sessionKey as string;
           this.form.get('message')?.setValue('');
         }),
-        delay(100)
+        delay(100),
       )
       .subscribe(() => {
         fileInput.value = '';
