@@ -2,7 +2,6 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { UserQuery } from '../models/use-query';
 import { Conversation } from '../models/conversation';
 import { SessionId } from '../models/session-id';
 
