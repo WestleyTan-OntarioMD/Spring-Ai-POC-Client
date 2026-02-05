@@ -54,9 +54,7 @@ export class ChatComponent {
       )
       .subscribe((id) => this.fetchConversations(id));
 
-    this.apiService
-      .getModels()
-      .subscribe((res) => (this.models = res.body || []));
+    this.apiService.getModels().subscribe((models) => (this.models = models));
   }
 
   handleSessionDelete() {
@@ -75,12 +73,11 @@ export class ChatComponent {
 
     this.apiService
       .getConversationsBySession(key)
-      .pipe(map((res) => res.body || []))
       .subscribe((conversations) => (this.conversations = conversations));
   }
 
   getSessions(): Observable<SessionId[]> {
-    return this.apiService.getAllSessions().pipe(map((res) => res.body || []));
+    return this.apiService.getAllSessions();
   }
 
   handleModelChange(event: any) {
@@ -103,7 +100,6 @@ export class ChatComponent {
     this.apiService
       .generateSession()
       .pipe(
-        map((res) => res.body!),
         tap((sessionId: SessionId) => {
           const sessionKey = sessionId.key;
           localStorage.setItem('sessionKey', sessionKey);
@@ -150,10 +146,10 @@ export class ChatComponent {
         delay(1),
         tap(() => this.scrollToBottom()),
         concatMap(() => this.apiService.sendMessage(formData)),
-        filter((res) => !!res.body?.sessionKey),
+        filter((res) => !!res?.sessionKey),
         tap((res) => {
-          this.addToChats(this.sessionKey, false, res.body!.message as string);
-          this.sessionKey = res.body!.sessionKey as string;
+          this.addToChats(this.sessionKey, false, res!.message as string);
+          this.sessionKey = res!.sessionKey as string;
           this.form.get('message')?.setValue('');
         }),
         delay(100),

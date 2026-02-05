@@ -51,7 +51,7 @@ export class UploadComponent {
     this.apiService
       .uploadFile(this.sessionId, this.prompt, this.useMode, this.selectedFile)
       .subscribe((res) => {
-        this.saveText(res.body?.content || '');
+        this.saveText(res?.content || '');
 
         fileInput.value = '';
         this.selectedFile = null;

@@ -48,56 +48,59 @@ export class ApiService {
       )
       .pipe(map((res) => <Conversation>res.body));
   }
-  sendMessage(dto: any): Observable<HttpResponse<Conversation>> {
-    return this.httpClient.post<Conversation>(
-      `${this.endpoint}/chat/conversations`,
-      dto,
-      {
+  sendMessage(dto: any): Observable<Conversation> {
+    return this.httpClient
+      .post<Conversation>(`${this.endpoint}/chat/conversations`, dto, {
         observe: 'response',
-      },
-    );
+      })
+      .pipe(map((res) => <Conversation>res.body));
   }
 
-  getModels(): Observable<HttpResponse<string[]>> {
-    return this.httpClient.get<string[]>(`${this.endpoint}/chat/models`, {
-      observe: 'response',
-    });
+  getModels(): Observable<string[]> {
+    return this.httpClient
+      .get<string[]>(`${this.endpoint}/chat/models`, {
+        observe: 'response',
+      })
+      .pipe(map((res) => <string[]>res.body));
   }
 
-  getConversationsBySession(
-    sessionKey: string,
-  ): Observable<HttpResponse<Conversation[]>> {
-    return this.httpClient.get<Conversation[]>(
-      `${this.endpoint}/chat/conversations`,
-      {
+  getConversationsBySession(sessionKey: string): Observable<Conversation[]> {
+    return this.httpClient
+      .get<Conversation[]>(`${this.endpoint}/chat/conversations`, {
         params: {
           'session-key': sessionKey,
         },
         observe: 'response',
-      },
-    );
+      })
+      .pipe(map((res) => <Conversation[]>res.body));
   }
 
-  getAllSessions(): Observable<HttpResponse<SessionId[]>> {
-    return this.httpClient.get<SessionId[]>(`${this.endpoint}/chat/sessions`, {
-      observe: 'response',
-    });
-  }
-
-  generateSession(): Observable<HttpResponse<SessionId>> {
-    return this.httpClient.post<SessionId>(
-      `${this.endpoint}/chat/sessions`,
-      {},
-      {
+  getAllSessions(): Observable<SessionId[]> {
+    return this.httpClient
+      .get<SessionId[]>(`${this.endpoint}/chat/sessions`, {
         observe: 'response',
-      },
-    );
+      })
+      .pipe(map((res) => <SessionId[]>res.body));
   }
 
-  deleteSessionById(id: string): Observable<HttpResponse<any>> {
-    return this.httpClient.delete<any>(`${this.endpoint}/chat/sessions/${id}`, {
-      observe: 'response',
-    });
+  generateSession(): Observable<SessionId> {
+    return this.httpClient
+      .post<SessionId>(
+        `${this.endpoint}/chat/sessions`,
+        {},
+        {
+          observe: 'response',
+        },
+      )
+      .pipe(map((res) => <SessionId>res.body));
+  }
+
+  deleteSessionById(id: string): Observable<any> {
+    return this.httpClient
+      .delete<any>(`${this.endpoint}/chat/sessions/${id}`, {
+        observe: 'response',
+      })
+      .pipe(map((res) => res.body));
   }
 
   uploadFile(
@@ -105,21 +108,19 @@ export class ApiService {
     prompt: string,
     useLLM: string,
     file: File,
-  ): Observable<HttpResponse<{ content: string }>> {
+  ): Observable<{ content: string }> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.httpClient.post<{ content: string }>(
-      `${this.endpoint}/docs/analysis`,
-      formData,
-      {
+    return this.httpClient
+      .post<{ content: string }>(`${this.endpoint}/docs/analysis`, formData, {
         params: {
           'session-key': sessionKey,
           prompt: prompt,
           'use-llm': useLLM,
         },
         observe: 'response',
-      },
-    );
+      })
+      .pipe(map((res) => <{ content: string }>res.body));
   }
 }
 
