@@ -15,6 +15,15 @@ export class ApiService {
     this.endpoint = environment.endpoint;
   }
 
+  requestToHQ(message: string): Observable<HttpResponse<Conversation>> {
+    return this.httpClient.post<Conversation>(
+      `${this.endpoint}/assistance/requests`,
+      { message },
+      {
+        observe: 'response',
+      },
+    );
+  }
   sendMessage(dto: any): Observable<HttpResponse<Conversation>> {
     return this.httpClient.post<Conversation>(
       `${this.endpoint}/chat/conversations`,
