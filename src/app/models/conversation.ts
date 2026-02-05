@@ -1,7 +1,7 @@
-export class Conversation {
-  id?: string = '';
+import { Base } from './base';
+
+export class Conversation extends Base {
   user: boolean = false;
-  createDt: Date = new Date();
   message: string = '';
   sessionKey: string = '';
 }

@@ -1,10 +1,12 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { filter, map, Observable } from 'rxjs';
 
 import { Conversation } from '../models/conversation';
 import { SessionId } from '../models/session-id';
 import { environment } from 'src/environments/environment';
+import { AgentTag } from '../models/agent-tag';
+import { Report } from '../models/report';
 
 @Injectable({
   providedIn: 'root',
@@ -15,30 +17,36 @@ export class ApiService {
     this.endpoint = environment.endpoint;
   }
 
-  listAgents() {
-    return this.httpClient.get<string[]>(`${this.endpoint}/hq/agent-tags`, {
-      observe: 'response',
-    });
-  }
-
-  listReport(minutes: number, identification: string) {
-    return this.httpClient.get<string[]>(`${this.endpoint}/hq/reports`, {
-      params: {
-        'x-minutes': minutes,
-        'x-agent-identification': identification,
-      },
-      observe: 'response',
-    });
-  }
-
-  requestToHQ(message: string): Observable<HttpResponse<Conversation>> {
-    return this.httpClient.post<Conversation>(
-      `${this.endpoint}/assistance/agents/requests`,
-      { message },
-      {
+  listAgents(): Observable<AgentTag[]> {
+    return this.httpClient
+      .get<AgentTag[]>(`${this.endpoint}/hq/agent-tags`, {
         observe: 'response',
-      },
-    );
+      })
+      .pipe(map((res) => <AgentTag[]>res.body));
+  }
+
+  listReport(minutes: number, identification: string): Observable<Report[]> {
+    return this.httpClient
+      .get<Report[]>(`${this.endpoint}/hq/reports`, {
+        params: {
+          'x-minutes': minutes,
+          'x-agent-identification': identification,
+        },
+        observe: 'response',
+      })
+      .pipe(map((res) => <Report[]>res.body));
+  }
+
+  requestToHQ(message: string): Observable<Conversation> {
+    return this.httpClient
+      .post<Conversation>(
+        `${this.endpoint}/assistance/agents/requests`,
+        { message },
+        {
+          observe: 'response',
+        },
+      )
+      .pipe(map((res) => <Conversation>res.body));
   }
   sendMessage(dto: any): Observable<HttpResponse<Conversation>> {
     return this.httpClient.post<Conversation>(

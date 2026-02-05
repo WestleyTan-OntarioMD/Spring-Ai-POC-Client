@@ -91,6 +91,7 @@ export class ChatComponent {
     while (this.conversations.length > 20) this.conversations.shift();
 
     this.conversations.push({
+      id: '',
       user,
       createDt: new Date(),
       message,
