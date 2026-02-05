@@ -15,9 +15,25 @@ export class ApiService {
     this.endpoint = environment.endpoint;
   }
 
+  listAgents() {
+    return this.httpClient.get<string[]>(`${this.endpoint}/hq/agent-tags`, {
+      observe: 'response',
+    });
+  }
+
+  listReport(minutes: number, identification: string) {
+    return this.httpClient.get<string[]>(`${this.endpoint}/hq/reports`, {
+      params: {
+        'x-minutes': minutes,
+        'x-agent-identification': identification,
+      },
+      observe: 'response',
+    });
+  }
+
   requestToHQ(message: string): Observable<HttpResponse<Conversation>> {
     return this.httpClient.post<Conversation>(
-      `${this.endpoint}/assistance/requests`,
+      `${this.endpoint}/assistance/agents/requests`,
       { message },
       {
         observe: 'response',
