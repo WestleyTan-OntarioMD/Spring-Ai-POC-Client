@@ -15,13 +15,24 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" routerLink="chat" [queryParams]="{sessionKey}"
+          <a class="nav-link" routerLink="chat" [queryParams]="{ sessionKey }"
             >Chat</a
           >
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="docs" [queryParams]="{sessionKey}"
+          <a class="nav-link" routerLink="docs" [queryParams]="{ sessionKey }"
             >Upload</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="secure/agent">Agent Portal</a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="secure/hq"
+            [queryParams]="{ secure: true }"
+            >HQ Portal</a
           >
         </li>
       </ul>

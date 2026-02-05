@@ -16,9 +16,17 @@ import { AppComponent } from './app.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { UploadComponent } from './components/upload/upload.component';
 import { AppErrorHandler } from './services/app-error-handler';
+import { AgentPortalComponent } from './components/agent-portal/agent-portal.component';
+import { HqPortalComponent } from './components/hq-portal/hq-portal.component';
 
 @NgModule({
-  declarations: [AppComponent, ChatComponent, UploadComponent],
+  declarations: [
+    AppComponent,
+    ChatComponent,
+    UploadComponent,
+    AgentPortalComponent,
+    HqPortalComponent,
+  ],
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -33,6 +41,14 @@ import { AppErrorHandler } from './services/app-error-handler';
     HttpClientModule,
     BrowserAnimationsModule,
     RouterModule.forRoot([
+      {
+        component: AgentPortalComponent,
+        path: 'secure/agent',
+      },
+      {
+        component: HqPortalComponent,
+        path: 'secure/hq',
+      },
       {
         component: ChatComponent,
         path: 'chat',
