@@ -4,13 +4,16 @@ import { Observable } from 'rxjs';
 
 import { Conversation } from '../models/conversation';
 import { SessionId } from '../models/session-id';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  endpoint = 'http://localhost:7000';
-  constructor(private httpClient: HttpClient) {}
+  private endpoint;
+  constructor(private httpClient: HttpClient) {
+    this.endpoint = environment.endpoint;
+  }
 
   sendMessage(dto: any): Observable<HttpResponse<Conversation>> {
     return this.httpClient.post<Conversation>(
