@@ -24,6 +24,7 @@ export class AgentPortalComponent {
     this.locallyStoredConversations(this.identification),
   );
   reports$ = new BehaviorSubject<Report[]>([]);
+  agents$ = this.apiService.agents$;
 
   constructor(private apiService: ApiService) {}
 

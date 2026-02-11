@@ -12,3 +12,8 @@ button[disabled] {
   background-color: gray !important;
   color: darkgray !important;
 }
+
+.event--disabled {
+  user-select: none;
+  pointer-events: none;
+}

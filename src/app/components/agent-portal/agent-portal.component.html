@@ -2,6 +2,26 @@
   <article class="col-5 d-flex flex-column">
     <h2>Agent Portal</h2>
 
+    <mat-card class="mb-2">
+      <mat-card-header>
+        <mat-card-subtitle
+          >Agent Names and Identifications for Testing</mat-card-subtitle
+        >
+      </mat-card-header>
+      <mat-card-content
+        class="d-flex flex-wrap flex-rows"
+        style="max-height: 25vh; overflow-y: scroll"
+      >
+        <button
+          mat-stroked-button
+          *ngFor="let agent of agents$ | async"
+          class="me-1 mb-1 event--disabled"
+        >
+          {{ agent.name }} {{ agent.identification }}
+        </button>
+      </mat-card-content>
+    </mat-card>
+
     <mat-form-field appearance="fill">
       <mat-label>Message</mat-label>
       <textarea matInput [formControl]="message" rows="15"></textarea>
