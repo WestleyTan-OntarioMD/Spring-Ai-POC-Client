@@ -51,7 +51,7 @@ export class UploadComponent {
     this.apiService
       .uploadFile(this.sessionId, this.prompt, this.useMode, this.selectedFile)
       .subscribe((res) => {
-        this.saveText(res?.content || '');
+        this.saveText(res?.content);
 
         fileInput.value = '';
         this.selectedFile = null;
@@ -59,9 +59,9 @@ export class UploadComponent {
       });
   }
 
-  private saveText(content: string) {
-    this.text = content;
-    localStorage.setItem(TEXT, content);
+  private saveText(content: string | null) {
+    this.text = content || '';
+    localStorage.setItem(TEXT, this.text);
   }
   handlePromptChange() {
     localStorage.setItem(PROMPT, this.prompt);

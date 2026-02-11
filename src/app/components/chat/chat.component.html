@@ -51,32 +51,6 @@
         </mat-select>
       </mat-form-field>
 
-      <!-- <div class="d-flex flex-rows justify-content-between">
-        <mat-form-field appearance="fill" class="w-25">
-          <mat-label>Temperature</mat-label>
-          <input matInput formControlName="temperature" />
-          <mat-hint>Temperature controlling randomness (0-2)</mat-hint>
-        </mat-form-field>
-        &nbsp;
-        <mat-form-field appearance="fill" class="w-25">
-          <mat-label>Top P</mat-label>
-          <input matInput formControlName="topP" />
-          <mat-hint>Top P for nucleus sampling (0-1)</mat-hint>
-        </mat-form-field>
-        &nbsp;
-        <mat-form-field appearance="fill" class="w-25">
-          <mat-label>Presence Penalty</mat-label>
-          <input matInput formControlName="presencePenalty" />
-          <mat-hint>Presence penalty (-2 to 2)</mat-hint>
-        </mat-form-field>
-        &nbsp;
-        <mat-form-field appearance="fill" class="w-25">
-          <mat-label>Frequency Penalty</mat-label>
-          <input matInput formControlName="frequencyPenalty" />
-          <mat-hint>Frequency penalty (-2 to 2)</mat-hint>
-        </mat-form-field>
-      </div> -->
-
       <div class="w-100 d-flex flex-rows">
         <input type="file" (change)="onFileSelected($event)" #fileInput />
       </div>
@@ -117,7 +91,7 @@
           class="w-75 mb-1 alert"
           [ngClass]="{
             'text-end alert-primary ms-auto': conversation.user,
-            'text-start alert-secondary me-auto': !conversation.user
+            'text-start alert-secondary me-auto': !conversation.user,
           }"
         >
           <h4>{{ conversation.user ? "User" : "Assistant" }}</h4>
@@ -130,17 +104,17 @@
           class="mb-3 w-100"
           [ngClass]="{
             'text-end': !conversation.user,
-            'text-start': conversation.user
+            'text-start': conversation.user,
           }"
         >
           <span
             class="w-75 d-inline-block"
             [ngClass]="{
               'text-end': conversation.user,
-              'text-start': !conversation.user
+              'text-start': !conversation.user,
             }"
           >
-            {{ conversation.createDt | date : "short" }}
+            {{ conversation.createDt | date: "short" }}
           </span>
         </p>
       </ng-container>

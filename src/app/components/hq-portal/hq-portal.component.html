@@ -1,5 +1,86 @@
 <main class="d-flex flex-rows justify-content-between">
-  <article class="col-5">
+  <article class="col-8">
     <h2>HQ Portal</h2>
+
+    <div class="d-flex flex-row justify-content-between">
+      <div class="alert alert-secondary col-8" *ngIf="!selectedAgent">
+        Ready For Connection!
+      </div>
+      <div
+        class="alert col-8"
+        *ngIf="selectedAgent"
+        [ngClass]="{
+          'alert-primary': !connected,
+          'alert-success': connected,
+        }"
+      >
+        <span *ngIf="!connected"
+          >Connecting to agent {{ selectedAgent.name }} ({{
+            selectedAgent.identification
+          }}) ...</span
+        >
+        <span *ngIf="connected">
+          Connected to agent {{ selectedAgent.name }} ({{
+            selectedAgent.identification
+          }}) → All Of Agent {{ selectedAgent.name }} Reports:
+          <b>{{ reports.length }}</b> In Total
+        </span>
+      </div>
+
+      <mat-form-field class="col-3">
+        <mat-label>Lookback Window (in mins)</mat-label>
+        <input
+          [readonly]="!connected"
+          matInput
+          type="number"
+          [formControl]="lookbackWindow"
+          step="15"
+          min="15"
+          max="10080"
+        />
+      </mat-form-field>
+    </div>
+
+    <div class="reports-container">
+      <mat-card
+        class="my-1 d-flex flex-row justify-content-between"
+        *ngFor="let report of reports"
+      >
+        <div>
+          {{ report.message }}
+        </div>
+        <div>
+          {{ report.createDt }}
+        </div>
+      </mat-card>
+    </div>
+  </article>
+
+  <article class="col-3">
+    <h2>Agents Available</h2>
+
+    <div class="d-flex flex-column justify-content-start agents-container">
+      <div *ngFor="let agent of agents$ | async" class="my-1">
+        <button
+          mat-raised-button
+          class="w-100"
+          (click)="connectToAgent(agent)"
+          [color]="
+            selectedAgent?.identification === agent.identification
+              ? 'primary'
+              : ''
+          "
+        >
+          <span class="col-5">
+            {{ agent.identification }}
+          </span>
+          —
+          <span class="col-5">
+            {{ agent.name }}
+          </span>
+        </button>
+      </div>
+      <span id="bottom-placeholder"></span>
+    </div>
   </article>
 </main>

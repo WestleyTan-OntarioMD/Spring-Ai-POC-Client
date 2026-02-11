@@ -1,6 +1,6 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { filter, map, Observable } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 
 import { Conversation } from '../models/conversation';
 import { SessionId } from '../models/session-id';
@@ -12,25 +12,32 @@ import { Report } from '../models/report';
   providedIn: 'root',
 })
 export class ApiService {
+  readonly agents$ = new BehaviorSubject<AgentTag[]>([]);
+
   private endpoint;
   constructor(private httpClient: HttpClient) {
     this.endpoint = environment.endpoint;
+
+    this.fetchAgents();
   }
 
-  listAgents(): Observable<AgentTag[]> {
-    return this.httpClient
-      .get<AgentTag[]>(`${this.endpoint}/hq/agent-tags`, {
+  fetchAgents(): void {
+    this.httpClient
+      .get<AgentTag[]>(`${this.endpoint}/assistance/hq/agent-tags`, {
         observe: 'response',
       })
-      .pipe(map((res) => <AgentTag[]>res.body));
+      .subscribe((res) => this.agents$.next(<AgentTag[]>res.body));
   }
 
-  listReport(minutes: number, identification: string): Observable<Report[]> {
+  listReportsByAgent(
+    minutes: number,
+    identification: string,
+  ): Observable<Report[]> {
     return this.httpClient
-      .get<Report[]>(`${this.endpoint}/hq/reports`, {
+      .get<Report[]>(`${this.endpoint}/assistance/hq/reports`, {
         params: {
-          'x-minutes': minutes,
-          'x-agent-identification': identification,
+          'X-Minutes': minutes + '',
+          'X-Agent-Identification': identification,
         },
         observe: 'response',
       })
