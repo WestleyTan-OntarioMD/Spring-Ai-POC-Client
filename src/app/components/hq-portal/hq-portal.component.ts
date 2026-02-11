@@ -29,10 +29,10 @@ export class HqPortalComponent implements OnInit, OnDestroy {
         filter(() => !!this.selectedAgent),
         takeUntil(this.destory$),
       )
-      .subscribe(() => this.connectToAgent(this.selectedAgent as AgentTag));
+      .subscribe(() => this.retrieveReports(this.selectedAgent as AgentTag));
   }
 
-  connectToAgent(agent: AgentTag) {
+  retrieveReports(agent: AgentTag) {
     this.connected = false;
     this.selectedAgent = agent;
 
