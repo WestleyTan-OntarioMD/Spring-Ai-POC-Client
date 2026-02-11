@@ -14,12 +14,22 @@ import { Report } from 'src/app/models/report';
 import { ApiService } from 'src/app/services/api.service';
 
 const CONVERSATION_WITH_HQ = 'CONVERSATION_WITH_HQ';
+const LIST_OF_COMMANDS = [
+  '● Agent sends report in and get acknowledgement',
+  '● Agent requests the newest update',
+  '● Agent requests the newest update from certain agent',
+  '● Agent requests specific information from all reports',
+  '● Agent requests escalation from the supervisor on major decisions',
+  '● Agent requests all nearby members to respond to a distress signal',
+  '● general use of chat for information',
+];
 @Component({
   selector: 'app-agent-portal',
   templateUrl: './agent-portal.component.html',
   styleUrls: ['./agent-portal.component.scss'],
 })
 export class AgentPortalComponent implements OnInit, OnDestroy {
+  readonly commands: string[] = LIST_OF_COMMANDS;
   message = new FormControl('', [
     Validators.required,
     Validators.minLength(3),
@@ -40,9 +50,8 @@ export class AgentPortalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.message.valueChanges
       .pipe(
-        map((val: string | null) => val?.trim() || ''),
-        filter((val: string) => !!val),
-        map((val: string) => val.charAt(0).toUpperCase() + val.slice(1)),
+        filter((val: string | null) => !!val?.trim()),
+        map((val: any) => val.charAt(0).toUpperCase() + val.slice(1)),
         takeUntil(this.destroyed$),
       )
       .subscribe((v) => this.message.setValue(v, { emitEvent: false }));
