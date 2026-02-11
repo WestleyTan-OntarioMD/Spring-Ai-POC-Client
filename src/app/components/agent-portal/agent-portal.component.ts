@@ -1,6 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { BehaviorSubject, delay, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  delay,
+  filter,
+  map,
+  Subject,
+  takeUntil,
+  tap,
+} from 'rxjs';
 import { Conversation } from 'src/app/models/conversation';
 import { Report } from 'src/app/models/report';
 import { ApiService } from 'src/app/services/api.service';
@@ -11,7 +19,7 @@ const CONVERSATION_WITH_HQ = 'CONVERSATION_WITH_HQ';
   templateUrl: './agent-portal.component.html',
   styleUrls: ['./agent-portal.component.scss'],
 })
-export class AgentPortalComponent {
+export class AgentPortalComponent implements OnInit, OnDestroy {
   message = new FormControl('', [
     Validators.required,
     Validators.minLength(3),
@@ -26,7 +34,19 @@ export class AgentPortalComponent {
   reports$ = new BehaviorSubject<Report[]>([]);
   agents$ = this.apiService.agents$;
 
+  destroyed$ = new Subject<void>();
   constructor(private apiService: ApiService) {}
+
+  ngOnInit(): void {
+    this.message.valueChanges
+      .pipe(
+        map((val: string | null) => val?.trim() || ''),
+        filter((val: string) => !!val),
+        map((val: string) => val.charAt(0).toUpperCase() + val.slice(1)),
+        takeUntil(this.destroyed$),
+      )
+      .subscribe((v) => this.message.setValue(v, { emitEvent: false }));
+  }
 
   fetchReports() {
     this.apiService.listReportsByAgent(60, '');
@@ -96,6 +116,11 @@ export class AgentPortalComponent {
   scrollToBottom() {
     const el = document.getElementById('bottom-placeholder');
     el?.scrollIntoView();
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 }
 
