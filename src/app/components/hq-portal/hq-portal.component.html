@@ -42,17 +42,16 @@
     </div>
 
     <div class="reports-container">
-      <mat-card
-        class="my-1 d-flex flex-row justify-content-between"
+      <div
+        class="my-1 d-flex flex-row justify-content-between alert alert-light cursor--pointer"
         *ngFor="let report of reports"
+        (click)="viewReportDetail(report)"
       >
+        <div>{{ report.message.slice(0, 100) }} ...</div>
         <div>
-          {{ report.message }}
+          {{ report.createDt | date: "medium" }}
         </div>
-        <div>
-          {{ report.createDt }}
-        </div>
-      </mat-card>
+      </div>
     </div>
   </article>
 

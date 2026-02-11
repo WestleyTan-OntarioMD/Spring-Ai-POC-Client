@@ -32,6 +32,10 @@ export class HqPortalComponent implements OnInit, OnDestroy {
       .subscribe(() => this.retrieveReports(this.selectedAgent as AgentTag));
   }
 
+  viewReportDetail(report: Report) {
+    alert(report.message);
+  }
+
   retrieveReports(agent: AgentTag) {
     this.connected = false;
     this.selectedAgent = agent;
