@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  endpoint: 'http://localhost:7000',
+  endpoint: 'https://spring-ai-poc.onrender.com',
 };

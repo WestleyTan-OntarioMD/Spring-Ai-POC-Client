@@ -21,7 +21,7 @@ const LIST_OF_COMMANDS = [
   '● Agent requests specific information from all reports',
   '● Agent requests escalation from the supervisor on major decisions',
   '● Agent requests all nearby members to respond to a distress signal',
-  '● general use of chat for information',
+  '● General use of chat for information',
 ];
 @Component({
   selector: 'app-agent-portal',

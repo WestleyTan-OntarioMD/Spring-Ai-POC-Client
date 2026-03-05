@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { delay, filter, Subject, takeUntil } from 'rxjs';
+import { debounceTime, delay, filter, Subject, takeUntil } from 'rxjs';
 import { AgentTag } from 'src/app/models/agent-tag';
 import { Report } from 'src/app/models/report';
 import { ApiService } from 'src/app/services/api.service';
@@ -27,6 +27,7 @@ export class HqPortalComponent implements OnInit, OnDestroy {
     this.lookbackWindow.valueChanges
       .pipe(
         filter(() => !!this.selectedAgent),
+        debounceTime(1000),
         takeUntil(this.destory$),
       )
       .subscribe(() => this.retrieveReports(this.selectedAgent as AgentTag));
@@ -43,7 +44,7 @@ export class HqPortalComponent implements OnInit, OnDestroy {
     const minutes = this.lookbackWindow.value ?? 15;
     this.apiService
       .listReportsByAgent(minutes, agent.identification)
-      .pipe(delay(2000))
+      .pipe(delay(500))
       .subscribe((reports) => {
         this.connected = true;
         this.reports = reports;

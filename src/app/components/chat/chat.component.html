@@ -60,7 +60,7 @@
         <textarea
           matInput
           formControlName="message"
-          rows="15"
+          rows="16"
           #message
         ></textarea>
       </mat-form-field>
@@ -69,7 +69,7 @@
         mat-raised-button
         type="button"
         color="primary"
-        class="mt-3"
+        class="mt-1"
         (click)="sendChat(fileInput)"
         [disabled]="form.invalid"
         [disabled]="buttonDisabled"

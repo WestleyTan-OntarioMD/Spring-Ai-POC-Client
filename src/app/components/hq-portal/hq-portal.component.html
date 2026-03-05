@@ -22,7 +22,7 @@
         <span *ngIf="connected">
           Connected to agent {{ selectedAgent.name }} ({{
             selectedAgent.identification
-          }}) → All Of Agent {{ selectedAgent.name }} Reports:
+          }}) → All Of Agent {{ selectedAgent.name }}'s Reports:
           <b>{{ reports.length }}</b> In Total
         </span>
       </div>
@@ -47,7 +47,7 @@
         *ngFor="let report of reports"
         (click)="viewReportDetail(report)"
       >
-        <div>{{ report.message.slice(0, 100) }} ...</div>
+        <div>{{ report.message.slice(0, 75) }} ...</div>
         <div>
           {{ report.createDt | date: "medium" }}
         </div>
