@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "deploy": "ng build --base-href=https://github.com/WestleyTan-OntarioMD/Spring-Ai-POC-Client && npx angular-cli-ghpages --dir=dist/Spring-Ai-POC-Client",
+    "auto": "git add . && git commit -m 'fix' && npm run deploy",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -30,6 +32,7 @@
     "@angular/cli": "~16.2.16",
     "@angular/compiler-cli": "^16.2.12",
     "@types/jasmine": "~4.3.0",
+    "angular-cli-ghpages": "^2.0.3",
     "jasmine-core": "~4.5.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.1.0",
