@@ -2,16 +2,18 @@
 
 ## Summary
 
-Spring Ai Poc Client is a simple interface to interact with the [Sprint AI POC](https://github.com/WestleyTan-OntarioMD/Spring-AI-POC), a demo on using Spring AI to interact with LLM and test the functionality on chat and text extraction from PDF files. 
+Spring Ai Poc Client is a simple interface ([live demo](https://westleytan-ontariomd.github.io/Spring-Ai-POC-Client/chat)) to interact with the [Sprint AI POC](https://github.com/WestleyTan-OntarioMD/Spring-AI-POC), a demo on using Spring AI to interact with LLM and test the functionality on chat and text extraction from PDF files.
 
 ## Branches
+
 - `master` - current/ongoing development
 
-***
+---
 
 ## Development
 
 ### Versions
+
 This project was originally generated with:
 [Angular CLI](https://github.com/angular/angular-cli) version 15.2.11.
 [Node](https://nodejs.org/en/download) version 16.20.2.
@@ -20,10 +22,11 @@ This project was originally generated with:
 ### Development server (LOCAL)
 
 Start `npm start` application:
-  1. Get repo from 'https://github.com/WestleyTan-OntarioMD/Spring-Ai-POC-Client'
-  2. Run `npm install` in the root
-  3. Run `npm start` to start the application
-  4. Navigate to `http://localhost:4200/`
+
+1. Get repo from 'https://github.com/WestleyTan-OntarioMD/Spring-Ai-POC-Client'
+2. Run `npm install` in the root
+3. Run `npm start` to start the application
+4. Navigate to `http://localhost:4200/`
 
 The app will automatically reload if you change any of the source files.
 
@@ -43,7 +46,7 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
-***
+---
 
 ## Build and Deployment
 
@@ -59,4 +62,4 @@ TBA
 
 TBA
 
-***
+---
