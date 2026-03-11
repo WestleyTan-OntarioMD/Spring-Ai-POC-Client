@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "deploy": "ng build --configuration production --base-href=/Spring-Ai-POC-Client/ && npx angular-cli-ghpages --dir=dist/Spring-Ai-POC-Client",
+    "deploy": "ng build --configuration production --base-href /Spring-Ai-POC-Client/ && npx angular-cli-ghpages --dir=dist/Spring-Ai-POC-Client",
     "auto": "git add . && git commit -m 'fix' && npm run deploy",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
