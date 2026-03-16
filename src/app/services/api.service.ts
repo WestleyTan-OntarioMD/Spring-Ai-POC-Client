@@ -1,36 +1,38 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, subscribeOn, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 import { AgentTag } from '../models/agent-tag';
 import { Conversation } from '../models/conversation';
 import { Report } from '../models/report';
 import { SessionId } from '../models/session-id';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
   readonly agents$ = new BehaviorSubject<AgentTag[]>([]);
-  readonly loading$ = new BehaviorSubject<boolean>(false);
 
   private endpoint;
-  constructor(private httpClient: HttpClient) {
+  constructor(
+    private httpClient: HttpClient,
+    private ngxSpinnerService: NgxSpinnerService,
+  ) {
     this.endpoint = environment.endpoint;
+    this.healthCheck();
   }
 
-  healthCheck(): Observable<any> {
-    this.loading$.next(true);
-    return this.httpClient
+  healthCheck(): void {
+    this.ngxSpinnerService.show();
+    this.httpClient
       .get<any>(`${this.endpoint}/insecure/health-check`)
-      .pipe(
-        tap({
-          next: () => this.loading$.next(false),
-          error: () => this.loading$.next(false),
-          complete: () => this.loading$.next(false),
-        }),
-      );
+      .subscribe({
+        next: () => this.ngxSpinnerService.hide(),
+        error: () => this.ngxSpinnerService.hide(),
+        complete: () => this.ngxSpinnerService.hide(),
+      });
   }
 
   fetchAgents(): void {
