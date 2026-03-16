@@ -1,13 +1,13 @@
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter, map, Observable, tap } from 'rxjs';
-
-import { Conversation } from '../models/conversation';
-import { SessionId } from '../models/session-id';
-import { environment } from 'src/environments/environment';
-import { AgentTag } from '../models/agent-tag';
-import { Report } from '../models/report';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import { environment } from 'src/environments/environment';
+
+import { AgentTag } from '../models/agent-tag';
+import { Conversation } from '../models/conversation';
+import { Report } from '../models/report';
+import { SessionId } from '../models/session-id';
 
 @Injectable({
   providedIn: 'root',
