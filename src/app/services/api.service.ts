@@ -1,12 +1,13 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter, map, Observable } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, tap } from 'rxjs';
 
 import { Conversation } from '../models/conversation';
 import { SessionId } from '../models/session-id';
 import { environment } from 'src/environments/environment';
 import { AgentTag } from '../models/agent-tag';
 import { Report } from '../models/report';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Injectable({
   providedIn: 'root',
@@ -15,10 +16,22 @@ export class ApiService {
   readonly agents$ = new BehaviorSubject<AgentTag[]>([]);
 
   private endpoint;
-  constructor(private httpClient: HttpClient) {
+  constructor(
+    private httpClient: HttpClient,
+    private spinner: NgxSpinnerService,
+  ) {
     this.endpoint = environment.endpoint;
+  }
 
-    this.fetchAgents();
+  healthCheck(): Observable<any> {
+    this.spinner.show();
+    return this.httpClient.get<any>(`${this.endpoint}/swagger-ui`).pipe(
+      tap({
+        next: () => this.spinner.hide(),
+        error: () => this.spinner.hide(),
+        complete: () => this.spinner.hide(),
+      }),
+    );
   }
 
   fetchAgents(): void {

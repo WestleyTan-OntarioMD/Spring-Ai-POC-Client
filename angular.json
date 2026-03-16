@@ -24,6 +24,7 @@
             "tsConfig": "tsconfig.app.json",
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
+              "node_modules/ngx-spinner/animations/ball-scale-multiple.css",
               "@angular/material/prebuilt-themes/purple-green.css",
               "src/styles.scss",
               "node_modules/bootstrap/dist/css/bootstrap.min.css"

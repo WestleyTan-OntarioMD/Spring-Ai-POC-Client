@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { ErrorHandler, NgModule } from '@angular/core';
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -20,6 +20,9 @@ import { HqPortalComponent } from './components/hq-portal/hq-portal.component';
 import { UploadComponent } from './components/upload/upload.component';
 import { AppErrorHandler } from './services/app-error-handler';
 import { MatIconModule } from '@angular/material/icon';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { Observable } from 'rxjs';
+import { ApiService } from './services/api.service';
 
 @NgModule({
   declarations: [
@@ -44,6 +47,7 @@ import { MatIconModule } from '@angular/material/icon';
     BrowserModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    NgxSpinnerModule.forRoot({ type: 'ball-scale-multiple' }),
     RouterModule.forRoot([
       {
         component: AgentPortalComponent,
@@ -66,6 +70,12 @@ import { MatIconModule } from '@angular/material/icon';
   ],
   providers: [
     {
+      provide: APP_INITIALIZER,
+      useFactory: initilize,
+      deps: [ApiService],
+      multi: true,
+    },
+    {
       provide: ErrorHandler,
       useClass: AppErrorHandler,
     },
@@ -73,3 +83,7 @@ import { MatIconModule } from '@angular/material/icon';
   bootstrap: [AppComponent],
 })
 export class AppModule {}
+
+function initilize(apiService: ApiService): () => Observable<any> {
+  return () => apiService.healthCheck();
+}
