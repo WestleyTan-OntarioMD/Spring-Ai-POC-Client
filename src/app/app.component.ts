@@ -9,7 +9,11 @@ import { ApiService } from './services/api.service';
 export class AppComponent implements OnInit {
   sessionKey = localStorage.getItem('sessionKey') || '';
 
-  constructor(private apiService: ApiService) {}
+  loading = false;
+
+  constructor(private apiService: ApiService) {
+    this.apiService.loading$.subscribe((loading) => (this.loading = loading));
+  }
   ngOnInit(): void {
     this.apiService.fetchAgents();
   }

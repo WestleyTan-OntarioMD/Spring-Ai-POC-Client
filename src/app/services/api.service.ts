@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { NgxSpinnerService } from 'ngx-spinner';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -14,24 +13,22 @@ import { SessionId } from '../models/session-id';
 })
 export class ApiService {
   readonly agents$ = new BehaviorSubject<AgentTag[]>([]);
+  readonly loading$ = new BehaviorSubject<boolean>(false);
 
   private endpoint;
-  constructor(
-    private httpClient: HttpClient,
-    private spinner: NgxSpinnerService,
-  ) {
+  constructor(private httpClient: HttpClient) {
     this.endpoint = environment.endpoint;
   }
 
   healthCheck(): Observable<any> {
-    this.spinner.show();
+    this.loading$.next(true);
     return this.httpClient
       .get<any>(`${this.endpoint}/insecure/health-check`)
       .pipe(
         tap({
-          next: () => this.spinner.hide(),
-          error: () => this.spinner.hide(),
-          complete: () => this.spinner.hide(),
+          next: () => this.loading$.next(false),
+          error: () => this.loading$.next(false),
+          complete: () => this.loading$.next(false),
         }),
       );
   }

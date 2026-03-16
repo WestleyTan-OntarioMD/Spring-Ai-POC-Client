@@ -44,5 +44,6 @@
 </nav>
 
 <div class="container pt-3">
-  <router-outlet></router-outlet>
+  <mat-spinner class="spinner-position" *ngIf="loading"></mat-spinner>
+  <router-outlet *ngIf="!loading"></router-outlet>
 </div>
