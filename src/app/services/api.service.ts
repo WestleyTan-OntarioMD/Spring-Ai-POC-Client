@@ -25,13 +25,15 @@ export class ApiService {
 
   healthCheck(): Observable<any> {
     this.spinner.show();
-    return this.httpClient.get<any>(`${this.endpoint}/swagger-ui`).pipe(
-      tap({
-        next: () => this.spinner.hide(),
-        error: () => this.spinner.hide(),
-        complete: () => this.spinner.hide(),
-      }),
-    );
+    return this.httpClient
+      .get<any>(`${this.endpoint}/insecure/health-check`)
+      .pipe(
+        tap({
+          next: () => this.spinner.hide(),
+          error: () => this.spinner.hide(),
+          complete: () => this.spinner.hide(),
+        }),
+      );
   }
 
   fetchAgents(): void {
