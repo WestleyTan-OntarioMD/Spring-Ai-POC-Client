@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, subscribeOn, tap } from 'rxjs';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { BehaviorSubject, delay, map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 import { AgentTag } from '../models/agent-tag';
 import { Conversation } from '../models/conversation';
 import { Report } from '../models/report';
 import { SessionId } from '../models/session-id';
-import { NgxSpinnerService } from 'ngx-spinner';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +28,7 @@ export class ApiService {
     this.ngxSpinnerService.show();
     this.httpClient
       .get<any>(`${this.endpoint}/insecure/health-check`)
+      .pipe(delay(500))
       .subscribe({
         next: () => this.ngxSpinnerService.hide(),
         error: () => this.ngxSpinnerService.hide(),
