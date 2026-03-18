@@ -21,18 +21,24 @@ export class ApiService {
     private ngxSpinnerService: NgxSpinnerService,
   ) {
     this.endpoint = environment.endpoint;
-    this.healthCheck();
   }
 
-  healthCheck(): void {
-    this.ngxSpinnerService.show();
+  healthCheck(hideDelay: number = 0): void {
+    const timer = setTimeout(() => {
+      this.ngxSpinnerService.show();
+    }, hideDelay);
+
+    const hide = () => {
+      clearTimeout(timer);
+      this.ngxSpinnerService.hide();
+    };
     this.httpClient
       .get<any>(`${this.endpoint}/insecure/health-check`)
       .pipe(delay(500))
       .subscribe({
-        next: () => this.ngxSpinnerService.hide(),
-        error: () => this.ngxSpinnerService.hide(),
-        complete: () => this.ngxSpinnerService.hide(),
+        next: () => hide(),
+        error: () => hide(),
+        complete: () => hide(),
       });
   }
 
