@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from './services/api.service';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import duration from 'dayjs/plugin/duration';
 import { interval } from 'rxjs';
 
+import { ApiService } from './services/api.service';
+
+dayjs.extend(utc);
+dayjs.extend(duration);
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

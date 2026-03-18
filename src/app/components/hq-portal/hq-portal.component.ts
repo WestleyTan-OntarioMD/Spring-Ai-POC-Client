@@ -4,10 +4,21 @@ import { debounceTime, delay, filter, Subject, takeUntil, tap } from 'rxjs';
 import { AgentTag } from 'src/app/models/agent-tag';
 import { Report } from 'src/app/models/report';
 import { ApiService } from 'src/app/services/api.service';
+import * as dayjs from 'dayjs';
+import { DurationUnitType } from 'dayjs/plugin/duration';
 
-const PATTERN = /^\d+\s*(min|mins|hr|hrs|day|days)$/i;
+const PATTERN = /^\d+\s*(min|mins|hr|hrs|d|ds|wk|wks|mo|mos|yr|yrs)$|All/i;
 const DEFAULT_WINDOW = '30 mins';
 const WINDOW_KEY = 'WINDOW_KEY';
+
+const MAP_TO_DAYJS: { [unit: string]: DurationUnitType } = {
+  min: 'm',
+  hr: 'h',
+  d: 'D',
+  wk: 'w',
+  mo: 'M',
+  yr: 'y',
+};
 @Component({
   selector: 'app-hq-portal',
   templateUrl: './hq-portal.component.html',
@@ -75,31 +86,34 @@ export class HqPortalComponent implements OnInit, OnDestroy {
 
     if (!PATTERN.test(val)) return 30;
     const lw = val.split(' ');
-    if (lw[1].includes('min')) return parseInt(lw[0]);
-    if (lw[1].includes('hr')) return parseInt(lw[0]) * 60;
-    return parseInt(lw[0]) * 1440;
+    return dayjs
+      .duration(parseInt(lw[0]), MAP_TO_DAYJS[lw[1].replace('s', '')])
+      .asMinutes();
   }
 
   private loadLookbackOptions() {
-    this.lookbackOptions = [
-      { label: DEFAULT_WINDOW, value: 30 },
-      { label: '45 mins', value: 45 },
-      { label: '60 mins', value: 60 },
-      { label: '90 mins', value: 90 },
-      { label: '2 hrs', value: 120 },
-      { label: '4 hrs', value: 240 },
-      { label: '8 hrs', value: 480 },
-      { label: '1 day', value: 1440 },
-      { label: '2 days', value: 2880 },
+    const labels: string[] = [
+      DEFAULT_WINDOW,
+      '60 mins',
+      '90 mins',
+      '2 hrs',
+      '4 hrs',
+      '8 hrs',
+      '1 d',
+      '2 ds',
+      '1 wk',
+      '2 wks',
+      '1 mo',
+      '3 mos',
+      '6 mos',
+      '1 yr',
+      '2 yrs',
+      '5 yrs',
     ];
-
-    for (let i = 0; i < 10; i++) {
-      const last = this.lookbackOptions[this.lookbackOptions.length - 1];
-      this.lookbackOptions.push({
-        label: `${parseInt(last.label) + 1} days`,
-        value: last.value + 1440,
-      });
-    }
+    this.lookbackOptions = [
+      ...labels.map((label) => ({ label, value: this.findMins(label) })),
+      { label: 'All', value: 99999999 },
+    ];
   }
 
   ngOnDestroy(): void {
