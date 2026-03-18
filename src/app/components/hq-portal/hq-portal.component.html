@@ -55,10 +55,13 @@
         *ngFor="let report of reports"
         (click)="viewReportDetail(report)"
       >
-        <div>
-          {{ report.agent.name }} | {{ report.message.slice(0, 75) }} ...
+        <div class="d-flex flex-row justify-content-between col-9">
+          <div class="col-1">{{ report.agent.name }}</div>
+          <div class="col-11">
+            &nbsp;|&nbsp;&nbsp;{{ report.message.slice(0, 75) }} ...
+          </div>
         </div>
-        <div>
+        <div class="col-3">
           {{ report.createDt | date: "medium" }}
         </div>
       </div>

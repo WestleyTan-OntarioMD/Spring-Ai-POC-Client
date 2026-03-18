@@ -7,6 +7,7 @@ import { ApiService } from 'src/app/services/api.service';
 
 const PATTERN = /^\d+\s*(min|mins|hr|hrs|day|days)$/i;
 const DEFAULT_WINDOW = '30 mins';
+const WINDOW_KEY = 'WINDOW_KEY';
 @Component({
   selector: 'app-hq-portal',
   templateUrl: './hq-portal.component.html',
@@ -34,12 +35,15 @@ export class HqPortalComponent implements OnInit, OnDestroy {
       .pipe(
         filter(() => this.lookbackWindow.valid),
         debounceTime(1000),
+        tap((val) => localStorage.setItem(WINDOW_KEY, val as string)),
         tap((val) => (this.lockbackWindowSelected = this.findMins(val))),
         takeUntil(this.destory$),
       )
       .subscribe(() => this.retrieveReports(this.selectedAgent as AgentTag));
 
-    this.lookbackWindow.setValue(DEFAULT_WINDOW);
+    this.lookbackWindow.setValue(
+      localStorage.getItem(WINDOW_KEY) || DEFAULT_WINDOW,
+    );
   }
 
   viewReportDetail(report: Report) {
