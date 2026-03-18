@@ -21,6 +21,7 @@ import { ChatComponent } from './components/chat/chat.component';
 import { HqPortalComponent } from './components/hq-portal/hq-portal.component';
 import { UploadComponent } from './components/upload/upload.component';
 import { AppErrorHandler } from './services/app-error-handler';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { AppErrorHandler } from './services/app-error-handler';
     MatMenuModule,
     ReactiveFormsModule,
     MatButtonModule,
+    MatAutocompleteModule,
     MatIconModule,
     MatProgressSpinnerModule,
     MatCardModule,

@@ -46,13 +46,13 @@ export class ApiService {
 
   listReportsByAgent(
     minutes: number,
-    identification: string,
+    identification: string | undefined,
   ): Observable<Report[]> {
     return this.httpClient
       .get<Report[]>(`${this.endpoint}/assistance/hq/reports`, {
         params: {
           'X-Minutes': minutes + '',
-          'X-Agent-Identification': identification,
+          'X-Agent-Identification': identification || '',
         },
         observe: 'response',
       })
