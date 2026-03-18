@@ -108,7 +108,6 @@ export class HqPortalComponent implements OnInit, OnDestroy {
       '6 mos',
       '1 yr',
       '2 yrs',
-      '5 yrs',
     ];
     this.lookbackOptions = [
       ...labels.map((label) => ({ label, value: this.findMins(label) })),
