@@ -22,7 +22,7 @@
         type="button"
         color="?"
         class="col-4"
-        [disabled]="!sessionKey || !conversations.length"
+        [disabled]="!sessionKey"
         (click)="handleSessionDelete()"
       >
         Delete
@@ -59,8 +59,7 @@
         color="primary"
         class="mt-1"
         (click)="sendChat(fileInput)"
-        [disabled]="form.invalid"
-        [disabled]="buttonDisabled"
+        [disabled]="form.invalid || buttonDisabled || !sessionKey"
       >
         <div class="spinner-border" *ngIf="buttonDisabled; else avail">
           <span class="visually-hidden">Loading...</span>

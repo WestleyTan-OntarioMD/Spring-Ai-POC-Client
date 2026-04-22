@@ -34,7 +34,7 @@ export class ChatComponent {
     private router: Router,
     private route: ActivatedRoute,
   ) {
-    this.getSessions().subscribe((sessions) => (this.sessions = sessions));
+    this.getSessions().subscribe();
 
     setTimeout(() => {
       this.scrollToBottom();
@@ -57,7 +57,17 @@ export class ChatComponent {
 
     this.apiService
       .deleteSessionById(session.id)
-      .subscribe(() => this.generateSessionKey());
+      .pipe(
+        concatMap(() => this.getSessions()),
+        map(() => this.sessions[this.sessions.length - 1]?.id),
+        tap((nextKey) => {
+          localStorage.setItem('sessionKey', nextKey);
+          this.sessionKey = nextKey;
+        }),
+      )
+      .subscribe((sessionKey) =>
+        this.router.navigate([], { queryParams: { sessionKey } }),
+      );
   }
 
   fetchConversations(key: string | null) {
@@ -68,8 +78,11 @@ export class ChatComponent {
       .subscribe((conversations) => (this.conversations = conversations));
   }
 
-  getSessions(): Observable<SessionId[]> {
-    return this.apiService.getAllSessions();
+  getSessions(): Observable<any> {
+    return this.apiService.getAllSessions().pipe(
+      tap((sessions) => (this.sessions = sessions)),
+      map(() => true),
+    );
   }
 
   private addToChats(sessionKey: string, user: boolean, message: string) {
@@ -94,7 +107,6 @@ export class ChatComponent {
           this.sessionKey = sessionKey;
         }),
         concatMap(() => this.getSessions()),
-        tap((sessions) => (this.sessions = sessions)),
       )
       .subscribe(() =>
         this.router.navigate([], {
