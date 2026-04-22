@@ -84,14 +84,6 @@ export class ApiService {
       .pipe(map((res) => <Conversation>res.body));
   }
 
-  getModels(): Observable<string[]> {
-    return this.httpClient
-      .get<string[]>(`${this.endpoint}/chat/models`, {
-        observe: 'response',
-      })
-      .pipe(map((res) => <string[]>res.body));
-  }
-
   getConversationsBySession(sessionKey: string): Observable<Conversation[]> {
     return this.httpClient
       .get<Conversation[]>(`${this.endpoint}/chat/conversations`, {

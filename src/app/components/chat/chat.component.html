@@ -39,18 +39,6 @@
     </div>
 
     <form [formGroup]="form" class="d-flex flex-column">
-      <mat-form-field appearance="fill">
-        <mat-label>Model</mat-label>
-        <mat-select
-          (selectionChange)="handleModelChange($event)"
-          formControlName="modelIndex"
-        >
-          <mat-option *ngFor="let model of models; index as i" [value]="i">
-            {{ model }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-
       <div class="w-100 d-flex flex-rows">
         <input type="file" (change)="onFileSelected($event)" #fileInput />
       </div>

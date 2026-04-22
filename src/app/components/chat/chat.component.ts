@@ -8,7 +8,6 @@ import { SessionId } from 'src/app/models/session-id';
 import { UserQuery } from 'src/app/models/use-query';
 import { ApiService } from 'src/app/services/api.service';
 
-const APP_MODEL = 'APP_MODEL';
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
@@ -20,7 +19,6 @@ export class ChatComponent {
   sessionKey = localStorage.getItem('sessionKey') || '';
   sessions: SessionId[] = [];
   conversations: Conversation[] = [];
-  models: string[] = [];
   buttonDisabled = false;
 
   form = new FormGroup({
@@ -28,10 +26,6 @@ export class ChatComponent {
       Validators.required,
       Validators.minLength(1),
     ]),
-    modelIndex: new FormControl(
-      parseInt(localStorage.getItem(APP_MODEL) || '0'),
-      [Validators.required, Validators.min(0)],
-    ),
   });
 
   @ViewChild('message') message: ElementRef = <ElementRef>{};
@@ -53,8 +47,6 @@ export class ChatComponent {
         filter((id) => !!id),
       )
       .subscribe((id) => this.fetchConversations(id));
-
-    this.apiService.getModels().subscribe((models) => (this.models = models));
   }
 
   handleSessionDelete() {
@@ -78,10 +70,6 @@ export class ChatComponent {
 
   getSessions(): Observable<SessionId[]> {
     return this.apiService.getAllSessions();
-  }
-
-  handleModelChange(event: any) {
-    localStorage.setItem(APP_MODEL, event.value);
   }
 
   private addToChats(sessionKey: string, user: boolean, message: string) {
