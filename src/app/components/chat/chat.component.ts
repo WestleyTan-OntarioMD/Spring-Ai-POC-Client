@@ -63,7 +63,7 @@ export class ChatComponent implements OnDestroy {
 
     this.apiService.assistantMessage$
       .pipe(
-        concatMap((text) => of(text).pipe(delay(200))),
+        concatMap((text) => of(text).pipe(delay(500))),
         takeUntil(this.destory$),
       )
       .subscribe({
