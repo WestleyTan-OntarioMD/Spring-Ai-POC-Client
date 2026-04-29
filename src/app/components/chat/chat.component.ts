@@ -1,8 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { concatMap, delay, filter, map, Observable, of, tap } from 'rxjs';
-
+import { concatMap, filter, map, Observable, tap } from 'rxjs';
 import { Conversation } from 'src/app/models/conversation';
 import { SessionId } from 'src/app/models/session-id';
 import { UserQuery } from 'src/app/models/use-query';
@@ -22,7 +21,7 @@ export class ChatComponent {
   buttonDisabled = false;
 
   form = new FormGroup({
-    message: new FormControl('', [
+    content: new FormControl('', [
       Validators.required,
       Validators.minLength(1),
     ]),
@@ -47,6 +46,17 @@ export class ChatComponent {
         filter((id) => !!id),
       )
       .subscribe((id) => this.fetchConversations(id));
+
+    this.apiService.assistantMessage$.subscribe({
+      next: (text) => {
+        this.conversations[this.conversations.length - 1].message += text;
+        this.scrollToBottom();
+      },
+      complete: () => {
+        this.selectedFile = null;
+        this.buttonDisabled = false;
+      },
+    });
   }
 
   handleSessionDelete() {
@@ -85,15 +95,15 @@ export class ChatComponent {
     );
   }
 
-  private addToChats(sessionKey: string, user: boolean, message: string) {
+  private addToChats(sessionKey: string, isUser: boolean, message: string) {
     while (this.conversations.length > 20) this.conversations.shift();
 
     this.conversations.push({
       id: '',
-      user,
+      sessionKey,
+      user: isUser,
       createDt: new Date(),
       message,
-      sessionKey,
     });
   }
 
@@ -130,37 +140,38 @@ export class ChatComponent {
 
     this.buttonDisabled = true;
     const formVal = this.form.value as UserQuery;
-    this.addToChats(this.sessionKey, true, formVal.message);
+    this.addToChats(this.sessionKey, true, formVal.content);
+    this.addToChats(this.sessionKey, false, '');
+    this.scrollToBottom();
 
     const formData = new FormData();
-    formData.append('session-key', this.sessionKey);
     formData.append(
       'userQuery',
       new Blob([JSON.stringify(formVal)], { type: 'application/json' }),
     );
-    if (this.selectedFile)
-      formData.append('file', this.selectedFile, this.selectedFile.name);
 
-    of(true)
-      .pipe(
-        delay(1),
-        tap(() => this.scrollToBottom()),
-        concatMap(() => this.apiService.sendMessage(formData)),
-        filter((res) => !!res?.sessionKey),
-        tap((res) => {
-          this.addToChats(this.sessionKey, false, res!.message as string);
-          this.sessionKey = res!.sessionKey as string;
-          this.form.get('message')?.setValue('');
-        }),
-        delay(100),
-      )
-      .subscribe(() => {
+    if (this.selectedFile) {
+      formData.append('file', this.selectedFile, this.selectedFile.name);
+    }
+
+    this.form.reset();
+    this.apiService.sendMessage(this.sessionKey, formData).subscribe({
+      next: () => {
         fileInput.value = '';
         this.selectedFile = null;
-        this.buttonDisabled = false;
-        this.scrollToBottom();
+      },
+      error: (err) => console.error('ERROR:', err),
+      complete: () => {
         this.message.nativeElement.focus();
-      });
+        this.buttonDisabled = false;
+
+        setTimeout(() => {
+          const content =
+            this.conversations[this.conversations.length - 1].message;
+          this.apiService.saveAssistanceMessage(this.sessionKey, content);
+        }, 1000);
+      },
+    });
   }
 
   scrollToBottom() {

@@ -1,7 +1,17 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { BehaviorSubject, delay, map, Observable } from 'rxjs';
+import {
+  BehaviorSubject,
+  concatMap,
+  delay,
+  from,
+  map,
+  Observable,
+  of,
+  Subject,
+  take,
+} from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 import { AgentTag } from '../models/agent-tag';
@@ -14,6 +24,7 @@ import { SessionId } from '../models/session-id';
 })
 export class ApiService {
   readonly agents$ = new BehaviorSubject<AgentTag[]>([]);
+  readonly assistantMessage$ = new Subject<string>();
 
   private endpoint;
   constructor(
@@ -65,30 +76,80 @@ export class ApiService {
       .pipe(map((res) => <Report[]>res.body));
   }
 
-  requestToHQ(message: string): Observable<Conversation> {
+  requestToHQ(message: string): Observable<string> {
     return this.httpClient
-      .post<Conversation>(
+      .post<string>(
         `${this.endpoint}/assistance/agents/requests`,
         { message },
         {
           observe: 'response',
         },
       )
-      .pipe(map((res) => <Conversation>res.body));
+      .pipe(map((res) => <string>res.body));
   }
-  sendMessage(dto: any): Observable<Conversation> {
-    return this.httpClient
-      .post<Conversation>(`${this.endpoint}/chat/conversations`, dto, {
-        observe: 'response',
-      })
-      .pipe(map((res) => <Conversation>res.body));
+  sendMessage(sessionKey: string | null, dto: any): Observable<string> {
+    let lastLength = 0;
+    let currentText = '';
+    return new Observable<string>((subscriber) =>
+      this.httpClient
+        .post(`${this.endpoint}/chat/conversations/with-streaming`, dto, {
+          responseType: 'text',
+          observe: 'events',
+          reportProgress: true,
+          params: {
+            'x-session-key': sessionKey || '',
+          },
+        })
+        .subscribe({
+          next: (event: HttpEvent<string>) => {
+            if (event.type === HttpEventType.DownloadProgress) {
+              if ('partialText' in event && event.partialText) {
+                currentText = <string>event.partialText;
+                const newText = currentText
+                  .substring(lastLength)
+                  .replace(/^data:/, '')
+                  .replace(/\n\ndata:/gi, '')
+                  .trimEnd();
+                lastLength = currentText.length;
+
+                of(true)
+                  .pipe(delay(500), take(1))
+                  .subscribe(() => this.assistantMessage$.next(newText));
+              }
+            } else if (event.type === HttpEventType.Response) {
+              const final = currentText
+                .replace(/^data:/, '')
+                .replace(/\n\ndata:/gi, '')
+                .trimEnd();
+
+              subscriber.next(final);
+              subscriber.complete();
+            }
+          },
+          error: (err) => subscriber.error(err),
+        }),
+    );
   }
 
+  saveAssistanceMessage(sessionKey: string, content: string): void {
+    this.httpClient
+      .post(
+        `${this.endpoint}/chat/conversations`,
+        { content },
+        {
+          params: {
+            'x-session-key': sessionKey,
+          },
+          observe: 'response',
+        },
+      )
+      .subscribe();
+  }
   getConversationsBySession(sessionKey: string): Observable<Conversation[]> {
     return this.httpClient
       .get<Conversation[]>(`${this.endpoint}/chat/conversations`, {
         params: {
-          'session-key': sessionKey,
+          'x-session-key': sessionKey,
         },
         observe: 'response',
       })
@@ -134,9 +195,9 @@ export class ApiService {
     return this.httpClient
       .post<{ content: string }>(`${this.endpoint}/docs/analysis`, formData, {
         params: {
-          'session-key': sessionKey,
-          prompt: prompt,
+          'x-session-key': sessionKey,
           'use-llm': useLLM,
+          prompt,
         },
         observe: 'response',
       })

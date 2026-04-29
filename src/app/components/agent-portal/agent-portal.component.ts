@@ -67,12 +67,14 @@ export class AgentPortalComponent implements OnInit, OnDestroy {
 
     this.buttonDisabled = true;
     const message = this.message.value as string;
+    this.saveConversationLocally(this.identification, message, true);
+    this.saveConversationLocally(this.identification, '', false);
     this.apiService
       .requestToHQ(message)
       .pipe(
-        tap((con) => {
-          this.saveConversationLocally(this.identification, message, true);
-          this.saveConversationLocally(this.identification, con.message, false);
+        tap((response) => {
+          const cons = this.locallyStoredConversations(this.identification);
+          cons[cons.length - 1].message = response;
           this.message.reset();
           this.buttonDisabled = false;
         }),

@@ -1,3 +1,3 @@
 export class UserQuery {
-  message: string = '';
+  content: string = '';
 }

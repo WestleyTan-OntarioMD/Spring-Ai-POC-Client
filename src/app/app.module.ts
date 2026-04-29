@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -83,6 +83,7 @@ import { SizePipe } from './services/size.pipe';
       provide: ErrorHandler,
       useClass: AppErrorHandler,
     },
+    provideHttpClient(withFetch()),
   ],
   bootstrap: [AppComponent],
 })
