@@ -111,10 +111,7 @@ export class ApiService {
                   .replace(/\n\ndata:/gi, '')
                   .trimEnd();
                 lastLength = currentText.length;
-
-                of(true)
-                  .pipe(delay(500), take(1))
-                  .subscribe(() => this.assistantMessage$.next(newText));
+                this.assistantMessage$.next(newText);
               }
             } else if (event.type === HttpEventType.Response) {
               const final = currentText

@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { concatMap, filter, map, Observable, tap } from 'rxjs';
+import { concatMap, delay, filter, map, Observable, of, tap } from 'rxjs';
 import { Conversation } from 'src/app/models/conversation';
 import { SessionId } from 'src/app/models/session-id';
 import { UserQuery } from 'src/app/models/use-query';
@@ -47,16 +47,18 @@ export class ChatComponent {
       )
       .subscribe((id) => this.fetchConversations(id));
 
-    this.apiService.assistantMessage$.subscribe({
-      next: (text) => {
-        this.conversations[this.conversations.length - 1].message += text;
-        this.scrollToBottom();
-      },
-      complete: () => {
-        this.selectedFile = null;
-        this.buttonDisabled = false;
-      },
-    });
+    this.apiService.assistantMessage$
+      .pipe(concatMap((text) => of(text).pipe(delay(200))))
+      .subscribe({
+        next: (text) => {
+          this.conversations[this.conversations.length - 1].message += text;
+          this.scrollToBottom();
+        },
+        complete: () => {
+          this.selectedFile = null;
+          this.buttonDisabled = false;
+        },
+      });
   }
 
   handleSessionDelete() {
