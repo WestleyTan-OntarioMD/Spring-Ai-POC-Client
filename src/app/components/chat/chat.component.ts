@@ -1,7 +1,17 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { concatMap, delay, filter, map, Observable, of, tap } from 'rxjs';
+import {
+  concatMap,
+  delay,
+  filter,
+  map,
+  Observable,
+  of,
+  Subject,
+  takeUntil,
+  tap,
+} from 'rxjs';
 import { Conversation } from 'src/app/models/conversation';
 import { SessionId } from 'src/app/models/session-id';
 import { UserQuery } from 'src/app/models/use-query';
@@ -12,7 +22,8 @@ import { ApiService } from 'src/app/services/api.service';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss'],
 })
-export class ChatComponent {
+export class ChatComponent implements OnDestroy {
+  destory$ = new Subject();
   selectedFile: File | null = null;
 
   sessionKey = localStorage.getItem('sessionKey') || '';
@@ -48,7 +59,10 @@ export class ChatComponent {
       .subscribe((id) => this.fetchConversations(id));
 
     this.apiService.assistantMessage$
-      .pipe(concatMap((text) => of(text).pipe(delay(200))))
+      .pipe(
+        concatMap((text) => of(text).pipe(delay(200))),
+        takeUntil(this.destory$),
+      )
       .subscribe({
         next: (text) => {
           this.conversations[this.conversations.length - 1].message += text;
@@ -59,6 +73,12 @@ export class ChatComponent {
           this.buttonDisabled = false;
         },
       });
+
+    this.apiService.assistantMessageReturned$
+      .pipe(takeUntil(this.destory$))
+      .subscribe((content) =>
+        this.apiService.saveAssistanceMessage(this.sessionKey, content),
+      );
   }
 
   handleSessionDelete() {
@@ -166,12 +186,6 @@ export class ChatComponent {
       complete: () => {
         this.message.nativeElement.focus();
         this.buttonDisabled = false;
-
-        setTimeout(() => {
-          const content =
-            this.conversations[this.conversations.length - 1].message;
-          this.apiService.saveAssistanceMessage(this.sessionKey, content);
-        }, 1000);
       },
     });
   }
@@ -179,5 +193,10 @@ export class ChatComponent {
   scrollToBottom() {
     const el = document.getElementById('bottom-placeholder');
     el?.scrollIntoView();
+  }
+
+  ngOnDestroy(): void {
+    this.destory$.next(true);
+    this.destory$.complete();
   }
 }

@@ -25,6 +25,7 @@ import { SessionId } from '../models/session-id';
 export class ApiService {
   readonly agents$ = new BehaviorSubject<AgentTag[]>([]);
   readonly assistantMessage$ = new Subject<string>();
+  readonly assistantMessageReturned$ = new Subject<string>();
 
   private endpoint;
   constructor(
@@ -119,8 +120,8 @@ export class ApiService {
                 .replace(/\n\ndata:/gi, '')
                 .trimEnd();
 
-              subscriber.next(final);
               subscriber.complete();
+              this.assistantMessageReturned$.next(final);
             }
           },
           error: (err) => subscriber.error(err),
