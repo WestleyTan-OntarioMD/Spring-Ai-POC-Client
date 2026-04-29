@@ -53,7 +53,10 @@ export class ChatComponent implements OnDestroy {
     this.route.queryParamMap
       .pipe(
         map((params: ParamMap) => params.get('sessionKey') || ''),
-        tap((id) => (this.sessionKey = id)),
+        tap((id) => {
+          this.sessionKey = id;
+          this.conversations = [];
+        }),
         filter((id) => !!id),
       )
       .subscribe((id) => this.fetchConversations(id));
